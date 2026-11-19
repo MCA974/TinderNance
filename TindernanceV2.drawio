@@ -1,0 +1,99 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="2ovdwz9KDNtHUFD7yWh-">
+    <mxGraphModel dx="2524" dy="1041" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="user" parent="1" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;User&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- id : Uuid&lt;br/&gt;- email : string&lt;br/&gt;- password : string&lt;br/&gt;- firstName : string&lt;br/&gt;- lastName : string&lt;br/&gt;- role : UserRole&lt;br/&gt;- createdAt : DateTimeImmutable&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ register() : void&lt;br/&gt;+ login() : string&lt;/p&gt;" vertex="1">
+          <mxGeometry height="190" width="240" x="640" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="student" parent="1" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;StudentProfile&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- id : Uuid&lt;br/&gt;- photoUrl : string&lt;br/&gt;- targetStudyLevel : StudyLevel&lt;br/&gt;- obtainedDiploma : string&lt;br/&gt;- bio : string&lt;br/&gt;- schoolName : string&lt;br/&gt;- schoolStatus : SchoolStatus&lt;br/&gt;- contractDuration : ContractDuration&lt;br/&gt;- alternationRhythm : string&lt;br/&gt;- desiredStartDate : DateImmutable&lt;br/&gt;- cvUrl : string?&lt;br/&gt;- targetSector : string&lt;br/&gt;- isPublic : bool&lt;br/&gt;- isPaused : bool&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ updateProfile() : void&lt;br/&gt;+ toggleVisibility() : void&lt;br/&gt;+ togglePause() : void&lt;/p&gt;" vertex="1">
+          <mxGeometry height="340" width="270" x="160" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="area" parent="1" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#f5f5f5;strokeColor=#666666;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;i&gt;«value object»&lt;/i&gt;&lt;br/&gt;&lt;b&gt;SearchArea&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- city : string&lt;br/&gt;- department : string&lt;br/&gt;- region : string&lt;br/&gt;- radiusKm : int&lt;/p&gt;" vertex="1">
+          <mxGeometry height="120" width="220" x="-130" y="322" as="geometry" />
+        </mxCell>
+        <mxCell id="company" parent="1" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;CompanyProfile&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- id : Uuid&lt;br/&gt;- companyName : string&lt;br/&gt;- logoUrl : string&lt;br/&gt;- mediaGallery : string[]&lt;br/&gt;- employeeCount : EmployeeCountRange&lt;br/&gt;- sector : string&lt;br/&gt;- shortPresentation : string&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ updateShowcase() : void&lt;br/&gt;+ addMedia(url : string) : void&lt;/p&gt;" vertex="1">
+          <mxGeometry height="210" width="270" x="1080" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="offer" parent="1" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;JobOffer&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- id : Uuid&lt;br/&gt;- title : string&lt;br/&gt;- missionDescription : string&lt;br/&gt;- websiteUrl : string&lt;br/&gt;- tutorName : string&lt;br/&gt;- exactAddress : string&lt;br/&gt;- requiredStudyLevel : StudyLevel&lt;br/&gt;- acceptedDurations : ContractDuration[]&lt;br/&gt;- acceptedRhythm : string&lt;br/&gt;- startDate : DateImmutable&lt;br/&gt;- perks : string[]&lt;br/&gt;- status : OfferStatus&lt;br/&gt;- createdAt : DateTimeImmutable&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ createOffer() : void&lt;br/&gt;+ updateOffer() : void&lt;br/&gt;+ closeOffer() : void&lt;/p&gt;" vertex="1">
+          <mxGeometry height="260" width="270" x="1080" y="550" as="geometry" />
+        </mxCell>
+        <mxCell id="swipe" parent="1" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#f8cecc;strokeColor=#b85450;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Swipe&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- id : Uuid&lt;br/&gt;- studentAction : SwipeAction?&lt;br/&gt;- companyAction : SwipeAction?&lt;br/&gt;- studentSwipedAt : DateTimeImmutable?&lt;br/&gt;- companySwipedAt : DateTimeImmutable?&lt;br/&gt;- isRewound : bool&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ studentSwipe(action : SwipeAction) : void&lt;br/&gt;+ companySwipe(action : SwipeAction) : void&lt;br/&gt;+ superLike() : void&lt;br/&gt;+ rewind() : void&lt;/p&gt;" vertex="1">
+          <mxGeometry height="210" width="280" x="620" y="550" as="geometry" />
+        </mxCell>
+        <mxCell id="match" parent="1" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;MatchConversation&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- id : Uuid&lt;br/&gt;- status : MatchStatus&lt;br/&gt;- matchedAt : DateTimeImmutable&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ updateStatus(status : MatchStatus) : void&lt;br/&gt;+ unmatch() : void&lt;br/&gt;+ getStudentCvUrl() : string?&lt;/p&gt;" vertex="1">
+          <mxGeometry height="150" width="280" x="620" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="message" parent="1" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Message&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- id : Uuid&lt;br/&gt;- content : string&lt;br/&gt;- isRead : bool&lt;br/&gt;- sentAt : DateTimeImmutable&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ sendMessage() : void&lt;br/&gt;+ markAsRead() : void&lt;/p&gt;" vertex="1">
+          <mxGeometry height="150" width="240" x="640" y="1040" as="geometry" />
+        </mxCell>
+        <mxCell id="note" parent="1" style="shape=note;whiteSpace=wrap;html=1;fontSize=11;fillColor=#fff2cc;strokeColor=#d6b656;align=left;spacingLeft=4;" value="Contrainte : un seul profil, STUDENT ou COMPANY, selon le champ role" vertex="1">
+          <mxGeometry height="60" width="220" x="380" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="noteLink" edge="1" parent="1" source="note" style="endArrow=none;dashed=1;html=1;exitX=1;exitY=0.5;entryX=0;entryY=0.2;" target="user" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel1" edge="1" parent="1" source="user" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;exitX=0;exitY=0.5;entryX=0.5;entryY=0;" target="student" value="1 .. 0..1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="295" y="135" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel2" edge="1" parent="1" source="user" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;exitX=1;exitY=0.5;entryX=0.5;entryY=0;" target="company" value="1 .. 0..1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1215" y="135" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel3" edge="1" parent="1" source="company" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;startArrow=diamondThin;startFill=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="offer" value="1 .. 0..*">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel4" edge="1" parent="1" source="student" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;exitX=1;exitY=0.574;entryX=0;entryY=0.476;" target="swipe" value="1 .. 0..*">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="520" y="475" />
+              <mxPoint x="520" y="650" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel5" edge="1" parent="1" source="offer" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;exitX=0;exitY=0.385;entryX=1;entryY=0.476;" target="swipe" value="1 .. 0..*">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel6" edge="1" parent="1" source="swipe" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="match" value="1 .. 0..1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel7" edge="1" parent="1" source="match" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;startArrow=diamondThin;startFill=1;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" target="message" value="1 .. 0..*">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel9" edge="1" parent="1" source="student" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;startArrow=diamondThin;startFill=1;exitX=0;exitY=0.18;entryX=1;entryY=0.5;" target="area" value="1 .. 1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel10" edge="1" parent="1" source="student" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;exitX=0.9;exitY=1;entryX=0;entryY=0.5;" target="match" value="1 .. 0..* (student)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="403" y="895" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel11" edge="1" parent="1" source="offer" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;exitX=0.2;exitY=1;entryX=1;entryY=0.27;" target="match" value="1 .. 0..* (offer)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1134" y="860" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel12" edge="1" parent="1" source="user" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;exitX=1;exitY=0.9;entryX=1;entryY=0.5;" target="message" value="1 .. 0..* (sender)">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="960" y="211" />
+              <mxPoint x="960" y="1115" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
