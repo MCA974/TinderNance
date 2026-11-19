@@ -1,0 +1,63 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="Dj2M-R6xj4Vgt4MuWxJJ">
+    <mxGraphModel dx="1697" dy="1041" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="user" parent="1" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;User&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- id : Uuid&lt;br/&gt;- email : string&lt;br/&gt;- password : string&lt;br/&gt;- firstName : string&lt;br/&gt;- lastName : string&lt;br/&gt;- role : UserRole&lt;br/&gt;- createdAt : DateTimeImmutable&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ register() : void&lt;br/&gt;+ login() : string&lt;/p&gt;" vertex="1">
+          <mxGeometry height="190" width="240" x="640" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="student" parent="1" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;StudentProfile&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- id : Uuid&lt;br&gt;- photoUrl : string&lt;br&gt;- targetStudyLevel : StudyLevel&lt;br&gt;- obtainedDiploma : string&lt;br&gt;- bio : string&lt;br&gt;- searchCity : string&lt;br&gt;- searchDepartment : string&lt;br&gt;- searchRegion : string&lt;br&gt;- searchRadiusKm : int&lt;br&gt;- schoolName : string&lt;br&gt;- schoolStatus : SchoolStatus&lt;br&gt;- contractDuration : ContractDuration&lt;br&gt;- alternationRhythm : string&lt;br&gt;- desiredStartDate : DateImmutable&lt;br&gt;- cvUrl : string?&lt;br&gt;- targetSector : string&lt;br&gt;- isPublic : bool&lt;br&gt;- isPaused : bool&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ updateProfile() : void&lt;br&gt;+ toggleVisibility() : void&lt;br&gt;+ togglePause() : void&lt;/p&gt;" vertex="1">
+          <mxGeometry height="390" width="270" x="160" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="company" parent="1" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;CompanyProfile&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- id : Uuid&lt;br&gt;- companyName : string&lt;br&gt;- logoUrl : string&lt;br&gt;- mediaGallery : string[]&lt;br&gt;- employeeCount : EmployeeCountRange&lt;br&gt;- sector : string&lt;br&gt;- shortPresentation : string&lt;br&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ updateShowcase() : void&lt;br&gt;+ addMedia(url : string) : void&lt;/p&gt;" vertex="1">
+          <mxGeometry height="210" width="270" x="1080" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="offer" parent="1" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;JobOffer&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- id : Uuid&lt;br&gt;- title : string&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- missionDescription : string&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- websiteUrl : string&lt;br&gt;- tutorName : string&lt;br&gt;- exactAddress : string&lt;br&gt;- requiredStudyLevel : StudyLevel&lt;br&gt;- acceptedDurations : ContractDuration[]&lt;br&gt;- acceptedRhythm : string&lt;br&gt;- startDate : DateImmutable&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- perks : string[]&lt;/p&gt;&lt;div&gt;&amp;nbsp;- status : OfferStatus&lt;br&gt;&amp;nbsp;- createdAt : DateTimeImmutable&lt;/div&gt;&lt;hr size=&quot;1&quot;&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ createOffer() : void&lt;br&gt;+ updateOffer() : void&lt;br&gt;+ closeOffer() : void&lt;/p&gt;" vertex="1">
+          <mxGeometry height="260" width="270" x="1080" y="550" as="geometry" />
+        </mxCell>
+        <mxCell id="swipe" parent="1" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#f8cecc;strokeColor=#b85450;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Swipe&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- id : Uuid&lt;br/&gt;- studentAction : SwipeAction?&lt;br/&gt;- companyAction : SwipeAction?&lt;br/&gt;- studentSwipedAt : DateTimeImmutable?&lt;br/&gt;- companySwipedAt : DateTimeImmutable?&lt;br/&gt;- isRewound : bool&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ swipeRight() : void&lt;br/&gt;+ swipeLeft() : void&lt;br/&gt;+ superLike() : void&lt;br/&gt;+ rewind() : void&lt;/p&gt;" vertex="1">
+          <mxGeometry height="200" width="280" x="620" y="550" as="geometry" />
+        </mxCell>
+        <mxCell id="match" parent="1" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;MatchConversation&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- id : Uuid&lt;br/&gt;- status : MatchStatus&lt;br/&gt;- matchedAt : DateTimeImmutable&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ updateStatus(status : MatchStatus) : void&lt;br/&gt;+ unmatch() : void&lt;br/&gt;+ getStudentCvUrl() : string?&lt;/p&gt;" vertex="1">
+          <mxGeometry height="150" width="280" x="620" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="message" parent="1" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Message&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- id : Uuid&lt;br/&gt;- content : string&lt;br/&gt;- isRead : bool&lt;br/&gt;- sentAt : DateTimeImmutable&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ sendMessage() : void&lt;br/&gt;+ markAsRead() : void&lt;/p&gt;" vertex="1">
+          <mxGeometry height="150" width="240" x="260" y="820" as="geometry" />
+        </mxCell>
+        <mxCell id="interview" parent="1" style="verticalAlign=top;align=left;overflow=fill;fontSize=12;fontFamily=Helvetica;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;Interview&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- id : Uuid&lt;br/&gt;- scheduledAt : DateTimeImmutable&lt;br/&gt;- durationMinutes : int&lt;br/&gt;- videoCallLink : string&lt;br/&gt;- isConfirmed : bool&lt;/p&gt;&lt;hr size=&quot;1&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ proposeSlot() : void&lt;br/&gt;+ confirmSlot() : void&lt;/p&gt;" vertex="1">
+          <mxGeometry height="160" width="250" x="1020" y="860" as="geometry" />
+        </mxCell>
+        <mxCell id="rel1" edge="1" parent="1" source="user" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;" target="student" value="1 .. 0..1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel2" edge="1" parent="1" source="user" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;" target="company" value="1 .. 0..1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel3" edge="1" parent="1" source="company" style="endArrow=none;startArrow=diamondThin;startFill=1;html=1;edgeStyle=orthogonalEdgeStyle;" target="offer" value="1 .. 0..*">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel4" edge="1" parent="1" source="student" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;" target="swipe" value="1 .. 0..*">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="520" y="475" />
+              <mxPoint x="520" y="650" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="rel5" edge="1" parent="1" source="offer" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;" target="swipe" value="1 .. 0..*">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel6" edge="1" parent="1" source="swipe" style="endArrow=none;html=1;edgeStyle=orthogonalEdgeStyle;" target="match" value="1 .. 0..1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel7" edge="1" parent="1" source="match" style="endArrow=none;startArrow=diamondThin;startFill=1;html=1;edgeStyle=orthogonalEdgeStyle;" target="message" value="1 .. 0..*">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="rel8" edge="1" parent="1" source="match" style="endArrow=none;startArrow=diamondThin;startFill=1;html=1;edgeStyle=orthogonalEdgeStyle;" target="interview" value="1 .. 0..*">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
