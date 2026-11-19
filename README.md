@@ -1,4 +1,9 @@
-# TinderNance-
+# TinderNance
+
+Idée principale : 
+Un site pour trouver une alternance qui reprend le concept de Tinder permettant aux entreprises et aux étudiants de trouver une opportunité. 
+---
+
 Pour les étudiants (La rapidité et la dédramatisation) : Fini les lettres de motivation standardisées envoyées sans réponse. L'étudiant crée un profil synthétique (compétences, rythme d'alternance, localisation, soft skills) et découvre des offres ciblées sous forme de cartes visuelles.
 
 Pour les entreprises (L'efficacité et l'adéquation culturelle) : Les recruteurs accèdent à un vivier de candidats déjà filtrés selon leurs critères techniques (diplôme préparé, durée du contrat, rythme). Le « match » garantit un intérêt mutuel immédiat avant même le premier entretien.
