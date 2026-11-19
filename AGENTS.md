@@ -29,6 +29,7 @@ because it isn't installed yet; installing it is one command.
 Follow https://symfony.com/doc/current/best_practices.html to write idiomatic
 Symfony:
 
+- **Dossier Entités interdit de modification** : Il ne faut JAMAIS toucher, modifier ou altérer le dossier `src/Entity` (les entités du projet).
 - Use PHP attributes for framework metadata, and not only on controllers:
   `#[Route]`, `#[MapRequestPayload]`, `#[IsGranted]` on actions, `#[Assert\...]`
   on properties, `#[AsCommand]`, `#[AsEventListener]`, `#[AsMessageHandler]`, and
@@ -75,6 +76,7 @@ Three specifics worth spelling out, because they are easy to get wrong:
 - `.env` is committed and holds defaults only. Real secrets belong in `.env.local`
   (git-ignored) or the secrets vault (`bin/console secrets:set`), read via
   `%env(...)%`.
+- **Fin de tâche (Git)** : À chaque tâche terminée, effectuer systématiquement un `git add` des fichiers modifiés et un `git commit` avec un message en français clair et cohérent avec les changements effectués.
 
 ## Testing
 
@@ -104,3 +106,4 @@ things up in the project instead of relying on memory:
 - Read the installed source and docblocks under `vendor/`.
 - Docs: https://symfony.com/doc/current/ (switch to the version matching
   `composer.json` if it differs).
+- **Documentation Symfony 8.1 (.agents)** : Toujours consulter et respecter les compétences et directives du dossier `.agents/` (`.agents/skills/*`) pour suivre la documentation et les bonnes pratiques de Symfony 8.1.
