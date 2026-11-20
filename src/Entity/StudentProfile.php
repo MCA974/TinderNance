@@ -18,44 +18,44 @@ class StudentProfile
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $photoUrl = null;
 
-    #[ORM\Column(enumType: StudyLevel::class)]
+    #[ORM\Column(enumType: StudyLevel::class, nullable: true)]
     private ?StudyLevel $targetStudyLevel = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 100, nullable: true)]
     private ?string $obtainedDiploma = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $bio = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 100, nullable: true)]
     private ?string $schoolName = null;
 
-    #[ORM\Column(enumType: SchoolStatus::class)]
+    #[ORM\Column(enumType: SchoolStatus::class, nullable: true)]
     private ?SchoolStatus $schoolStatus = null;
 
-    #[ORM\Column(enumType: ContractDuration::class)]
+    #[ORM\Column(enumType: ContractDuration::class, nullable: true)]
     private ?ContractDuration $contractDuration = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 100, nullable: true)]
     private ?string $alternationRhythm = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'datetime_immutable', nullable: true)]
     private ?\DateTimeImmutable $desiredStartDate = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $cvUrl = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $targetSector = null;
 
     #[ORM\Column]
-    private ?bool $isPublic = null;
+    private ?bool $isPublic = false;
 
     #[ORM\Column]
-    private ?bool $isPaused = null;
+    private ?bool $isPaused = false;
 
     #[ORM\OneToOne(inversedBy: 'studentProfile', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
