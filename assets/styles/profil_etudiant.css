@@ -1113,3 +1113,48 @@ input:checked + .pe-slider:before {
     grid-template-columns: 1fr;
   }
 }
+
+/* Flash alerts & validation */
+.pe-alert {
+  padding: 14px 20px;
+  border-radius: var(--pe-radius-box);
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+  box-shadow: var(--pe-shadow-card);
+  animation: pe-slide-in 0.3s ease-out;
+}
+
+.pe-alert-success {
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.pe-alert-danger {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.pe-form-error {
+  color: #dc2c4f;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+@keyframes pe-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
