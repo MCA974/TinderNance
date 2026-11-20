@@ -38,6 +38,7 @@
             <nav class="nav-links">
                 {% if app.user %}
                     {% if app.user.role and app.user.role.value == 'STUDENT' %}
+                        <a href="{{ path('app_decouverte') }}" class="nav-link">Découverte</a>
                         <a href="{{ path('app_profil_etudiant') }}" class="nav-link">Mon Profil Étudiant</a>
                     {% elseif app.user.role and app.user.role.value == 'COMPANY' %}
                         <a href="{{ path('app_recruteur_profil') }}" class="nav-link">Espace Recruteur</a>

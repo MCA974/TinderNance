@@ -14,6 +14,6 @@ class RecruteurControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('.brand-logo');
         $this->assertSelectorTextContains('.brand-logo', 'Tindernance');
-        $this->assertSelectorExists('.rp-navbar');
+        $this->assertSelectorExists('.pe-navbar');
     }
 }

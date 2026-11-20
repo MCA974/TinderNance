@@ -1,0 +1,467 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Découverte & Swipe des Offres - TinderNance{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/profil_etudiant.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/decouverte.css') }}">
+{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block main %}
+{# =========================================================================
+   TOP NAVBAR (Harmonisée)
+   ========================================================================= #}
+<nav class="pe-navbar">
+    <a href="{{ path('app_home') }}" class="brand-logo" style="text-decoration: none;">
+        <div class="brand-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+        </div>
+        <span>Tinder<span class="highlight">nance</span></span>
+    </a>
+
+    <div class="pe-nav-links">
+        <a href="{{ path('app_decouverte') }}" class="pe-nav-link active">Découverte</a>
+        <a href="{{ path('app_profil_etudiant') }}" class="pe-nav-link">Mon Profil &amp; Vitrine</a>
+    </div>
+
+    <div class="pe-nav-user-area">
+        <div class="pe-nav-user-pill">
+            {% set navAvatar = studentProfile.photoUrl ? studentProfile.photoUrl : asset('images/nav_avatar.png') %}
+            <img src="{{ navAvatar }}" alt="Avatar" class="pe-nav-user-avatar" onerror="this.src='{{ asset('images/nav_avatar.png') }}';">
+            <div class="pe-nav-user-meta">
+                <p class="pe-nav-user-name">{{ app.user.firstName ~ ' ' ~ app.user.lastName }}</p>
+                <p class="pe-nav-user-role">Alternant Dev</p>
+            </div>
+        </div>
+
+        <a href="{{ path('app_logout') }}" class="pe-nav-link" style="color: var(--color-secondary); font-weight: 600;" title="Déconnexion">
+            Déconnexion
+        </a>
+    </div>
+</nav>
+
+{# =========================================================================
+   PAGE BODY: Découverte & Deck de Swipe
+   ========================================================================= #}
+<div class="dec-page-body" data-node-id="80:704">
+    
+    {# Ambient background decorative glows #}
+    <div class="dec-ambient-blur-1"></div>
+    <div class="dec-ambient-blur-2"></div>
+
+    {# Flash messages #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="pe-alert pe-alert-{{ label }}" style="margin-bottom: 24px;">
+                <span>{{ message }}</span>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="dec-grid">
+        
+        {# =====================================================================
+           LEFT COLUMN: FILTRES & PRÉFÉRENCES (4 cols)
+           ===================================================================== #}
+        <aside class="dec-aside-col" data-node-id="80:709">
+            
+            {# 1. Live Visibility Card #}
+            <div class="dec-visibility-card" data-node-id="80:710">
+                <div class="dec-visibility-status-row">
+                    <div class="dec-pulse-dot">
+                        {% if studentProfile.isPublic and not studentProfile.isPaused %}
+                            <div class="dec-pulse-ring"></div>
+                            <div class="dec-pulse-core"></div>
+                        {% else %}
+                            <div class="dec-pulse-core" style="background: #94a3b8;"></div>
+                        {% endif %}
+                    </div>
+                    <p class="dec-visibility-title">
+                        {% if studentProfile.isPublic and not studentProfile.isPaused %}
+                            Profil Actif &amp; Visible
+                        {% elseif studentProfile.isPaused %}
+                            Profil en Pause
+                        {% else %}
+                            Profil Privé
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="dec-availability-pill">
+                    <span class="dec-availability-label">Disponibilité :</span>
+                    <span class="dec-availability-value">
+                        {% if studentProfile.desiredStartDate %}
+                            {{ studentProfile.desiredStartDate|date('d/m/Y') }}
+                        {% else %}
+                            Immédiate
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            {# 2. Filtres Rapides Card #}
+            <div class="dec-filters-card" data-node-id="80:723">
+                <div class="dec-filters-header">
+                    <div class="dec-filters-title-wrap">
+                        <img src="{{ asset('icons/filter.svg') }}" alt="" width="16" height="16">
+                        <h2 class="dec-filters-title">Filtres Rapides</h2>
+                    </div>
+                    <a href="{{ path('app_decouverte') }}" class="dec-filters-reset-btn">Réinitialiser</a>
+                </div>
+
+                {# Filtre : Rythme de formation #}
+                <div class="dec-filter-group">
+                    <div class="dec-filter-group-header">
+                        <label class="dec-filter-label">Rythme de formation</label>
+                        <span class="dec-filter-tag">Prioritaire</span>
+                    </div>
+                    <div class="dec-filter-chips-grid">
+                        <a href="{{ path('app_decouverte', filters|merge({'rhythm': null})) }}"
+                           class="dec-filter-chip {% if not filters.rhythm %}active{% endif %}">
+                            Tous
+                        </a>
+                        <a href="{{ path('app_decouverte', filters|merge({'rhythm': '3j Entreprise / 2j École'})) }}"
+                           class="dec-filter-chip {% if filters.rhythm == '3j Entreprise / 2j École' %}active{% endif %}">
+                            3j Entr / 2j CFA
+                        </a>
+                        <a href="{{ path('app_decouverte', filters|merge({'rhythm': '1 semaine CFA / 3 sem. Entreprise'})) }}"
+                           class="dec-filter-chip {% if filters.rhythm == '1 semaine CFA / 3 sem. Entreprise' %}active{% endif %}">
+                            1 sem / 3 sem
+                        </a>
+                        <a href="{{ path('app_decouverte', filters|merge({'rhythm': '2 semaines / 2 semaines'})) }}"
+                           class="dec-filter-chip {% if filters.rhythm == '2 semaines / 2 semaines' %}active{% endif %}">
+                            2 sem / 2 sem
+                        </a>
+                    </div>
+                </div>
+
+                {# Filtre : Niveau d'études requis #}
+                <div class="dec-filter-group">
+                    <div class="dec-filter-group-header">
+                        <label class="dec-filter-label">Niveau d'études requis</label>
+                    </div>
+                    <div class="dec-filter-chips-grid">
+                        <a href="{{ path('app_decouverte', filters|merge({'studyLevel': null})) }}"
+                           class="dec-filter-chip {% if not filters.studyLevel %}active{% endif %}">
+                            Tous
+                        </a>
+                        <a href="{{ path('app_decouverte', filters|merge({'studyLevel': 'BAC+3'})) }}"
+                           class="dec-filter-chip {% if filters.studyLevel == 'BAC+3' %}active{% endif %}">
+                            BAC+3
+                        </a>
+                        <a href="{{ path('app_decouverte', filters|merge({'studyLevel': 'BAC+4'})) }}"
+                           class="dec-filter-chip {% if filters.studyLevel == 'BAC+4' %}active{% endif %}">
+                            BAC+4
+                        </a>
+                        <a href="{{ path('app_decouverte', filters|merge({'studyLevel': 'BAC+5'})) }}"
+                           class="dec-filter-chip {% if filters.studyLevel == 'BAC+5' %}active{% endif %}">
+                            BAC+5
+                        </a>
+                    </div>
+                </div>
+
+                {# Filtre : Durée du contrat #}
+                <div class="dec-filter-group">
+                    <div class="dec-filter-group-header">
+                        <label class="dec-filter-label">Durée de contrat</label>
+                    </div>
+                    <div class="dec-filter-chips-grid">
+                        <a href="{{ path('app_decouverte', filters|merge({'duration': null})) }}"
+                           class="dec-filter-chip {% if not filters.duration %}active{% endif %}">
+                            Toutes
+                        </a>
+                        <a href="{{ path('app_decouverte', filters|merge({'duration': '1_AN'})) }}"
+                           class="dec-filter-chip {% if filters.duration == '1_AN' %}active{% endif %}">
+                            12 mois
+                        </a>
+                        <a href="{{ path('app_decouverte', filters|merge({'duration': '2_ANS'})) }}"
+                           class="dec-filter-chip {% if filters.duration == '2_ANS' %}active{% endif %}">
+                            24 mois
+                        </a>
+                        <a href="{{ path('app_decouverte', filters|merge({'duration': '3_ANS'})) }}"
+                           class="dec-filter-chip {% if filters.duration == '3_ANS' %}active{% endif %}">
+                            36 mois
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+        </aside>
+
+        {# =====================================================================
+           CENTER COLUMN: CARD STACK MATCHING DECK (8 cols)
+           ===================================================================== #}
+        <main class="dec-main-col"
+              data-controller="swipe"
+              data-swipe-swipe-url-value="{{ path('app_decouverte_swipe', {id: '__ID__'}) }}"
+              data-swipe-rewind-url-value="{{ path('app_decouverte_rewind') }}"
+              data-node-id="80:806">
+            
+            {# Top Status Indicator #}
+            <div class="dec-top-status" data-node-id="80:808">
+                <div class="dec-status-left">
+                    <img src="{{ asset('icons/flame.svg') }}" alt="" width="16" height="16">
+                    <span class="dec-status-text" data-swipe-target="statusCounter">
+                        {% if offerCards|length > 0 %}
+                            OFFRE RECOMMANDÉE N° 1 / {{ offerCards|length }}
+                        {% else %}
+                            AUCUNE OFFRE DISPONIBLE
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="dec-progress-bar">
+                    <div class="dec-progress-fill" data-swipe-target="progressFill" style="width: 25%;"></div>
+                </div>
+            </div>
+
+            {# Card Deck Wrapper #}
+            <div class="dec-deck-wrapper" data-swipe-target="deckWrapper">
+                
+                {# Ghost Cards behind #}
+                <div class="dec-ghost-card-2" data-swipe-target="ghostCard2"></div>
+                <div class="dec-ghost-card-1" data-swipe-target="ghostCard1"></div>
+
+                {# Offer Cards Stack #}
+                {% for item in offerCards %}
+                    {% set offer = item.offer %}
+                    {% set company = offer.companyprofile %}
+                    {% set coverImage = (company.mediaGallery is defined and company.mediaGallery|length > 0) ? company.mediaGallery[0] : asset('images/offers/banner_default.png') %}
+
+                    <article class="dec-card"
+                             data-swipe-target="card"
+                             data-offer-id="{{ offer.id }}"
+                             data-node-id="80:823">
+                        
+                        {# 1. Cover Banner #}
+                        <div class="dec-card-banner">
+                            <img src="{{ coverImage }}" alt="" class="dec-card-banner-img" onerror="this.src='{{ asset('images/offers/banner_default.png') }}';">
+                            <div class="dec-card-scrim"></div>
+
+                            {# Top floating tags #}
+                            <div class="dec-banner-top-tags">
+                                <div class="dec-score-tag">
+                                    <img src="{{ asset('icons/live_spark.svg') }}" alt="" width="14" height="14">
+                                    <span>{{ item.matchScore }}% de Match</span>
+                                </div>
+                                <div class="dec-category-tag">
+                                    <span>{{ company.sector ?: 'Tech & Digital' }}</span>
+                                </div>
+                            </div>
+
+                            {# Floating company header at bottom of photo #}
+                            <div class="dec-banner-bottom-header">
+                                <div class="dec-company-meta-left">
+                                    <div class="dec-company-logo-wrap">
+                                        {% set compLogo = company.logoUrl ?: asset('images/recruiter_avatar.jpeg') %}
+                                        <img src="{{ compLogo }}" alt="{{ company.companyName }}" class="dec-company-logo-img" onerror="this.src='{{ asset('images/recruiter_avatar.jpeg') }}';">
+                                    </div>
+                                    <div>
+                                        <div class="dec-company-name-row">
+                                            <h3 class="dec-company-name">{{ company.companyName }}</h3>
+                                            <img src="{{ asset('icons/verified_check.svg') }}" alt="Vérifié" width="16" height="16">
+                                        </div>
+                                        <p class="dec-company-sub">
+                                            {{ company.employeeCount ? company.employeeCount.value ~ ' salariés' : 'Entreprise engagée' }}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="dec-start-date-badge">
+                                    Début : {{ offer.startDate ? offer.startDate|date('M. Y') : 'Sept. 2025' }}
+                                </div>
+                            </div>
+                        </div>
+
+                        {# 2. Card Body Content #}
+                        <div class="dec-card-body">
+                            
+                            {# Metadata chips #}
+                            <div class="dec-meta-chips-row">
+                                {% if item.formattedDurations %}
+                                    <span class="dec-chip-duration">Alternance {{ item.formattedDurations }}</span>
+                                {% endif %}
+                                {% if item.formattedStudyLevels %}
+                                    <span class="dec-chip-level">{{ item.formattedStudyLevels }}</span>
+                                {% endif %}
+                            </div>
+
+                            {# Offer Title #}
+                            <h2 class="dec-offer-title">{{ offer.title }}</h2>
+
+                            {# Location #}
+                            <div class="dec-offer-location">
+                                <img src="{{ asset('icons/pin.svg') }}" alt="" width="14" height="14">
+                                <span>{{ offer.exactAdress ?: 'Paris & Île-de-France' }}</span>
+                            </div>
+
+                            {# Key Rhythm Highlight Pill #}
+                            <div class="dec-rhythm-banner">
+                                <div class="dec-rhythm-icon-circle">
+                                    <img src="{{ asset('icons/calendar_rythme.svg') }}" alt="" width="16" height="16">
+                                </div>
+                                <div class="dec-rhythm-texts">
+                                    <div class="dec-rhythm-headline-row">
+                                        <span class="dec-rhythm-title">Rythme : {{ offer.acceptedRhythm ?: '3j Entreprise / 2j École' }}</span>
+                                        <span class="dec-cfa-compat-badge">100% Compatible CFA</span>
+                                    </div>
+                                    <p class="dec-rhythm-sub">
+                                        Planning validé et certifié pour les écoles et CFA partenaires.
+                                    </p>
+                                </div>
+                            </div>
+
+                            {# La Mission #}
+                            <div>
+                                <p class="dec-section-label">LA MISSION</p>
+                                <p class="dec-mission-text">{{ offer.missionDescription }}</p>
+                            </div>
+
+                            {# Perks / Avantages #}
+                            {% if offer.perks and offer.perks|length > 0 %}
+                                <div>
+                                    <p class="dec-section-label">AVANTAGES &amp; AMBIANCE DE TRAVAIL</p>
+                                    <div class="dec-perks-wrap">
+                                        {% for perk in offer.perks %}
+                                            <div class="dec-perk-chip">
+                                                <img src="{{ asset('icons/checkmark.svg') }}" alt="" width="12" height="10">
+                                                <span>{{ perk }}</span>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            {# Galerie Bureaux #}
+                            <div>
+                                <p class="dec-section-label">LES BUREAUX EN IMAGE</p>
+                                <div class="dec-gallery-row">
+                                    <div class="dec-gallery-thumb">
+                                        <img src="{{ asset('images/offers/office_1.png') }}" alt="Bureaux">
+                                    </div>
+                                    <div class="dec-gallery-thumb">
+                                        <img src="{{ asset('images/offers/office_2.png') }}" alt="Bureaux">
+                                    </div>
+                                    <div class="dec-gallery-thumb">
+                                        <img src="{{ asset('images/offers/office_3.png') }}" alt="Bureaux">
+                                    </div>
+                                </div>
+                            </div>
+
+                            {# Tactile Tinder Control Bar #}
+                            <div class="dec-controls-bar" data-node-id="80:926">
+                                <button type="button"
+                                        class="dec-control-btn dec-btn-undo"
+                                        data-action="click->swipe#undo"
+                                        data-swipe-target="undoBtn"
+                                        title="Annuler le dernier swipe">
+                                    <img src="{{ asset('icons/swipe_undo.svg') }}" alt="Annuler" width="18" height="18">
+                                </button>
+
+                                <button type="button"
+                                        class="dec-control-btn dec-btn-pass"
+                                        data-action="click->swipe#pass"
+                                        title="Passer cette offre">
+                                    <img src="{{ asset('icons/swipe_pass.svg') }}" alt="Passer" width="22" height="22">
+                                </button>
+
+                                <button type="button"
+                                        class="dec-control-btn dec-btn-superlike"
+                                        data-action="click->swipe#superLike"
+                                        title="Super-Like : Priorité coup de cœur">
+                                    <img src="{{ asset('icons/swipe_superlike.svg') }}" alt="" width="18" height="18">
+                                    <span class="dec-superlike-label">Super-Like</span>
+                                    <span class="dec-superlike-tag">+3x Vues</span>
+                                </button>
+
+                                <button type="button"
+                                        class="dec-control-btn dec-btn-like"
+                                        data-action="click->swipe#like"
+                                        title="Liker cette offre">
+                                    <img src="{{ asset('icons/swipe_like.svg') }}" alt="Liker" width="24" height="24">
+                                </button>
+                            </div>
+
+                        </div>
+
+                    </article>
+                {% endfor %}
+
+            </div>
+
+            {# Empty State when all cards are swiped #}
+            <div class="dec-empty-state" data-swipe-target="emptyState">
+                <div class="dec-empty-icon">
+                    <img src="{{ asset('icons/flame.svg') }}" alt="" width="36" height="36">
+                </div>
+                <h3 class="dec-empty-title">Vous avez exploré toutes les offres ! 🎉</h3>
+                <p class="dec-empty-desc">
+                    Revenez régulièrement pour découvrir les nouvelles offres publiées par les entreprises ou ajustez vos critères de recherche.
+                </p>
+                <div style="display: flex; gap: 12px; justify-content: center;">
+                    <a href="{{ path('app_decouverte') }}" class="dec-empty-btn">
+                        <img src="{{ asset('icons/refresh_cv.svg') }}" alt="" width="16" height="16">
+                        <span>Réinitialiser les filtres</span>
+                    </a>
+                    <a href="{{ path('app_profil_etudiant') }}" class="dec-empty-btn" style="background: var(--dec-primary-soft); color: var(--dec-primary);">
+                        <span>Mon Profil &amp; Vitrine</span>
+                    </a>
+                </div>
+            </div>
+
+            {# Match Modal Popup #}
+            <div class="dec-match-modal" data-swipe-target="matchModal">
+                <div class="dec-match-card">
+                    <div class="dec-match-avatars-row">
+                        {% set modalStudentAvatar = studentProfile.photoUrl ?: asset('images/nav_avatar.png') %}
+                        <img src="{{ modalStudentAvatar }}" alt="Mon avatar" class="dec-match-avatar">
+                        <div class="dec-match-heart-badge">
+                            <img src="{{ asset('icons/heart.svg') }}" alt="Match" width="20" height="20">
+                        </div>
+                        <img src="{{ asset('images/recruiter_avatar.jpeg') }}"
+                             alt="Entreprise"
+                             class="dec-match-avatar"
+                             data-swipe-target="matchCompanyLogo">
+                    </div>
+
+                    <h2 class="dec-match-title">C'est un Match ! 🎉</h2>
+                    <p class="dec-match-desc">
+                        Félicitations ! Vous et <strong data-swipe-target="matchCompanyName">l'entreprise</strong> avez un coup de cœur mutuel.
+                    </p>
+
+                    <div class="dec-match-actions">
+                        <button type="button"
+                                class="dec-match-btn-secondary"
+                                data-action="click->swipe#closeMatchModal">
+                            Continuer à swiper
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+    </div>
+
+</div>
+
+{# =========================================================================
+   FOOTER (Harmonisé)
+   ========================================================================= #}
+<footer class="pe-footer-bar">
+    <div class="pe-footer-brand-copy">
+        <span class="pe-footer-brand">TinderNance</span>
+        <span>© 2025 Plateforme intelligente de recrutement en alternance.</span>
+    </div>
+    <div class="pe-footer-links">
+        <a href="#" class="pe-footer-link">Mentions légales</a>
+        <a href="#" class="pe-footer-link">Protection des données</a>
+        <a href="#" class="pe-footer-link">Aide &amp; FAQ</a>
+    </div>
+</footer>
+{% endblock %}
