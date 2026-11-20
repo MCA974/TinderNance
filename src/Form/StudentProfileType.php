@@ -6,12 +6,14 @@ use App\DTO\StudentProfileDto;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
 
 class StudentProfileType extends AbstractType
 {
@@ -56,6 +58,30 @@ class StudentProfileType extends AbstractType
             ])
             ->add('isPaused', HiddenType::class, [
                 'required' => false,
+            ])
+            ->add('photoFile', FileType::class, [
+                'required' => false,
+                'mapped' => true,
+                'label' => false,
+                'constraints' => [
+                    new File(
+                        maxSize: '5M',
+                        mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+                        mimeTypesMessage: 'Veuillez uploader une image (JPG, PNG, WEBP).',
+                    ),
+                ],
+            ])
+            ->add('cvFile', FileType::class, [
+                'required' => false,
+                'mapped' => true,
+                'label' => false,
+                'constraints' => [
+                    new File(
+                        maxSize: '10M',
+                        mimeTypes: ['application/pdf'],
+                        mimeTypesMessage: 'Veuillez uploader un PDF.',
+                    ),
+                ],
             ]);
     }
 

@@ -45,7 +45,13 @@ class StudentProfileDto
 
     public ?string $cvUrl = null;
 
-    public bool $isPublic = true;
+    /** @var \Symfony\Component\HttpFoundation\File\UploadedFile|null */
+    public mixed $photoFile = null;
+
+    /** @var \Symfony\Component\HttpFoundation\File\UploadedFile|null */
+    public mixed $cvFile = null;
+
+    public bool $isPublic = false;
 
     public bool $isPaused = false;
 }
