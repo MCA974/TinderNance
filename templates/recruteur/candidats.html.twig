@@ -1,0 +1,327 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion & Swipe des Candidats - TinderNance{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/profil_etudiant.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/swipe_candidats.css') }}">
+{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block main %}
+{# =========================================================================
+   TOP NAVIGATION BAR
+   ========================================================================= #}
+<nav class="pe-navbar">
+    <a href="{{ path('app_home') }}" class="brand-logo" style="text-decoration: none;">
+        <div class="brand-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+        </div>
+        <span>Tinder<span class="highlight">nance</span></span>
+    </a>
+
+    <div class="pe-nav-links">
+        <a href="#" class="pe-nav-link">Offres</a>
+        <a href="{{ path('app_recruteur_candidats') }}" class="pe-nav-link active">Candidats</a>
+        <a href="#" class="pe-nav-link">
+            <span>Matches &amp; Messages</span>
+            <span class="pe-badge-count">5</span>
+        </a>
+        <a href="{{ path('app_recruteur_profil') }}" class="pe-nav-link">Mon Profil &amp; Vitrine</a>
+    </div>
+
+    <div class="pe-nav-user-area">
+        <button type="button" class="pe-nav-bell-btn" title="Notifications">
+            <img src="{{ asset('icons/bell.svg') }}" alt="" width="18" height="18">
+            <span class="pe-nav-bell-badge"></span>
+        </button>
+
+        <div class="pe-nav-user-pill">
+            {% set navAvatar = companyProfile and companyProfile.logoUrl ? companyProfile.logoUrl : asset('images/recruiter_avatar.jpeg') %}
+            <img src="{{ navAvatar }}" alt="Avatar" class="pe-nav-user-avatar" onerror="this.src='{{ asset('images/recruiter_avatar.jpeg') }}';">
+            <div class="pe-nav-user-meta">
+                <p class="pe-nav-user-name">{{ companyProfile ? companyProfile.companyName : (app.user ? app.user.firstName ~ ' ' ~ app.user.lastName : 'Recruteur') }}</p>
+                <p class="pe-nav-user-role">Recruteur</p>
+            </div>
+        </div>
+
+        <a href="{{ path('app_logout') }}" class="pe-nav-link" style="color: var(--color-secondary); font-weight: 600;" title="Déconnexion">
+            Déconnexion
+        </a>
+    </div>
+</nav>
+
+{# =========================================================================
+   MAIN CONTENT: GESTION & SWIPE DES CANDIDATS (FIGMA 80:303)
+   ========================================================================= #}
+<div class="sc-page-wrapper"
+     data-controller="swipe-candidats"
+     data-swipe-candidats-offer-id-value="{{ currentOffer ? currentOffer.id : 1 }}"
+     data-swipe-candidats-swipe-url-value="{{ path('app_recruteur_swipe_candidate') }}">
+
+    {# Match Toast Notification #}
+    <div class="sc-match-toast" data-swipe-candidats-target="toast">
+        <span data-swipe-candidats-target="toastText">🎉 C'est un Match instantané !</span>
+    </div>
+
+    <div class="sc-container">
+
+        {# ═════════════════════════════════════════════════════════════════════
+           HEADER TOP BAR: SELECTEUR DE POSTE & STATISTIQUES PIPELINE
+           ═════════════════════════════════════════════════════════════════════ #}
+        <div class="sc-header-bar">
+            <div class="sc-header-left">
+                <div class="sc-offer-selector" title="Changer d'offre">
+                    <div class="sc-offer-pulse">
+                        <div class="sc-offer-pulse-ring"></div>
+                        <div class="sc-offer-pulse-dot"></div>
+                    </div>
+                    <div class="sc-offer-texts">
+                        <span class="sc-offer-label">POSTE CIBLÉ</span>
+                        <span class="sc-offer-title">
+                            {{ currentOffer ? currentOffer.title : 'Développeur Fullstack React / Node' }}
+                            <img src="{{ asset('icons/chevron_down.svg') }}" alt="" width="10" height="6">
+                        </span>
+                    </div>
+                </div>
+
+                <div class="sc-stat-pill sc-stat-pill-pending">
+                    <img src="{{ asset('icons/users.svg') }}" alt="" width="16" height="12">
+                    <span class="sc-stat-count" data-swipe-candidats-target="pendingCount">{{ pendingCount }}</span>
+                    <span class="sc-stat-label">candidatures en attente</span>
+                </div>
+
+                <div class="sc-stat-pill sc-stat-pill-status">
+                    <img src="{{ asset('icons/stats_matches.svg') }}" alt="" width="12" height="14">
+                    <span class="sc-stat-label">Statut : <strong>{{ matchesThisWeek }} matches</strong> cette semaine</span>
+                </div>
+            </div>
+
+            <div class="sc-header-right">
+                <button type="button" class="sc-btn-criteres" title="Ajuster les critères de matching">
+                    <img src="{{ asset('icons/filter.svg') }}" alt="" width="14" height="14">
+                    <span>Critères</span>
+                </button>
+                <a href="{{ path('app_recruteur_profil') }}" class="sc-btn-new-offer">
+                    <img src="{{ asset('icons/plus.svg') }}" alt="" width="14" height="14">
+                    <span>Nouvelle annonce</span>
+                </a>
+            </div>
+        </div>
+
+        {# ═════════════════════════════════════════════════════════════════════
+           MAIN WORKSPACE: CANDIDATE CARD & SWIPE ACTIONS
+           ═════════════════════════════════════════════════════════════════════ #}
+        <div class="sc-card-viewport">
+
+            {% for candidate in candidates %}
+            <article class="sc-candidate-card"
+                     data-swipe-candidats-target="card"
+                     data-candidate-id="{{ candidate.id }}"
+                     style="{% if not loop.first %}display: none;{% endif %}">
+
+                {# Glowing Incoming Like Banner (Si le candidat a déjà liké l'offre) #}
+                {% if candidate.hasLikedOffer %}
+                <div class="sc-card-like-banner">
+                    <div class="sc-like-banner-left">
+                        <img src="{{ asset('icons/flame.svg') }}" alt="Like" width="16" height="18">
+                        <span>CE CANDIDAT A LIKÉ VOTRE OFFRE !</span>
+                    </div>
+                    <span class="sc-like-banner-pill">Match instantané si vous validez</span>
+                </div>
+                {% endif %}
+
+                {# Hero Cover & Avatar Composition #}
+                <div class="sc-card-hero">
+                    <div class="sc-hero-top-row">
+                        <div class="sc-status-pill">
+                            <span class="sc-status-dot"></span>
+                            <span>{{ candidate.activeStatus }}</span>
+                        </div>
+                        {% if candidate.hasCfaDossier %}
+                        <div class="sc-cfa-pill">
+                            <img src="{{ asset('icons/verified_check.svg') }}" alt="" width="16" height="16">
+                            <span>Dossier CFA certifié</span>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="sc-hero-candidate-row">
+                        <div class="sc-candidate-avatar-wrap">
+                            {% set candidateAvatar = candidate.photoUrl ?: asset('images/candidate_thomas.jpeg') %}
+                            <img src="{{ candidateAvatar }}" alt="{{ candidate.name }}" class="sc-candidate-avatar" onerror="this.src='{{ asset('images/candidate_thomas.jpeg') }}';">
+                            <div class="sc-candidate-verified-badge" title="Profil vérifié">
+                                <img src="{{ asset('icons/checkmark.svg') }}" alt="Vérifié" width="12" height="10">
+                            </div>
+                        </div>
+
+                        <div class="sc-candidate-identity">
+                            <div class="sc-candidate-name-row">
+                                <h2 class="sc-candidate-name">{{ candidate.name }}</h2>
+                                <span class="sc-candidate-age">{{ candidate.age }} ans</span>
+                            </div>
+                            <p class="sc-candidate-title">Alternance {{ candidate.diploma }} ({{ candidate.studyLevel }})</p>
+                        </div>
+                    </div>
+                </div>
+
+                {# Card Body #}
+                <div class="sc-card-body">
+
+                    {# 3 Key Apprenticeship Parameters #}
+                    <div class="sc-metrics-row">
+                        <div class="sc-metric-box">
+                            <div class="sc-metric-header">
+                                <img src="{{ asset('icons/school_cap.svg') }}" alt="" width="14" height="12">
+                                <span>ÉCOLE / CFA</span>
+                            </div>
+                            <p class="sc-metric-value">{{ candidate.school }}</p>
+                            <p class="sc-metric-sub">Scolarité confirmée • {{ candidate.schoolStatus }}</p>
+                        </div>
+
+                        <div class="sc-metric-box sc-metric-box-amber">
+                            <div class="sc-metric-header">
+                                <img src="{{ asset('icons/calendar_clock.svg') }}" alt="" width="14" height="14">
+                                <span>RYTHME VALIDÉ</span>
+                            </div>
+                            <p class="sc-metric-value">{{ candidate.rhythm }}</p>
+                            <p class="sc-metric-sub">Durée : {{ candidate.duration }}</p>
+                        </div>
+
+                        <div class="sc-metric-box">
+                            <div class="sc-metric-header">
+                                <img src="{{ asset('icons/pin.svg') }}" alt="" width="12" height="14">
+                                <span>LOCALISATION</span>
+                            </div>
+                            <p class="sc-metric-value">{{ candidate.location }}</p>
+                            <p class="sc-metric-sub sc-metric-sub-green">15 min de vos bureaux</p>
+                        </div>
+                    </div>
+
+                    {# Pitch / Bio #}
+                    <div class="sc-pitch-block">
+                        <span class="sc-pitch-label">SON ACCROCHE PERSONNALISÉE</span>
+                        <p class="sc-pitch-text">{{ candidate.bio|raw }}</p>
+                    </div>
+
+                    {# Tech Stack & Frameworks #}
+                    <div class="sc-stack-section">
+                        <span class="sc-stack-label">STACK TECHNIQUE &amp; FRAMEWORKS</span>
+                        <div class="sc-stack-pills">
+                            {% for tech in candidate.stack %}
+                                {% if loop.index <= 3 %}
+                                <span class="sc-stack-pill-primary">
+                                    <span class="sc-stack-dot"></span>
+                                    <span>{{ tech }}</span>
+                                </span>
+                                {% else %}
+                                <span class="sc-stack-pill-secondary">{{ tech }}</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    {# Mini-CV Button #}
+                    <div class="sc-cv-btn-wrap">
+                        <a href="{{ candidate.cvUrl ?: '#' }}" target="_blank" rel="noopener" class="sc-cv-btn">
+                            <img src="{{ asset('icons/pdf_icon.svg') }}" alt="" width="16" height="14">
+                            <span>Consulter le mini-CV (PDF certifié {{ candidate.school }})</span>
+                            <img src="{{ asset('icons/external_link.svg') }}" alt="" width="10" height="10">
+                        </a>
+                    </div>
+
+                    {# SWIPE / DECISION DOCK (Physical tactile control capsule) #}
+                    <div class="sc-decision-dock">
+                        <button type="button"
+                                class="sc-dock-btn-pass"
+                                title="Passer ce candidat (Touche ←)"
+                                data-action="click->swipe-candidats#pass">
+                            <img src="{{ asset('icons/pass.svg') }}" alt="Passer" width="18" height="18">
+                        </button>
+
+                        <button type="button"
+                                class="sc-dock-btn-wait"
+                                title="Mettre en attente (Touche B)"
+                                data-action="click->swipe-candidats#wait">
+                            <img src="{{ asset('icons/bookmark.svg') }}" alt="Mettre de côté" width="16" height="18">
+                        </button>
+
+                        <button type="button"
+                                class="sc-dock-btn-match"
+                                title="Accepter le Match (Touche →)"
+                                data-action="click->swipe-candidats#match">
+                            <img src="{{ asset('icons/checkmark.svg') }}" alt="" width="22" height="20">
+                            <span>Accepter le Match</span>
+                        </button>
+
+                        <button type="button"
+                                class="sc-dock-btn-contact"
+                                title="Contacter directement">
+                            <img src="{{ asset('icons/send.svg') }}" alt="Message" width="18" height="16">
+                        </button>
+                    </div>
+
+                </div>{# end sc-card-body #}
+
+            </article>
+            {% endfor %}
+
+            {# Empty State (Quand tous les profils ont été swipés) #}
+            <div class="sc-empty-state" data-swipe-candidats-target="emptyState" style="display: none;">
+                <span class="sc-empty-icon">✨</span>
+                <h3 class="sc-empty-title">Vous êtes à jour !</h3>
+                <p class="sc-empty-desc">
+                    Vous avez examiné tous les profils de candidats disponibles pour cette offre. De nouveaux profils certifiés arrivent quotidiennement !
+                </p>
+                <div style="display: flex; gap: 12px; margin-top: 8px;">
+                    <a href="{{ path('app_recruteur_profil') }}" class="sc-btn-criteres" style="text-decoration: none;">
+                        <span>Voir mon profil entreprise</span>
+                    </a>
+                    <a href="{{ path('app_recruteur_candidats') }}" class="sc-btn-new-offer">
+                        <span>Actualiser la liste</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>{# end sc-card-viewport #}
+
+        {# ═════════════════════════════════════════════════════════════════════
+           FOOTER - BOTTOM STATS STRIP
+           ═════════════════════════════════════════════════════════════════════ #}
+        <div class="sc-footer-strip">
+            <div class="sc-footer-left">
+                <img src="{{ asset('icons/eye.svg') }}" alt="" width="16" height="16">
+                <span data-swipe-candidats-target="swipedCount">{{ swipedTodayCount }}</span>
+                <span>profils examinés aujourd'hui</span>
+            </div>
+
+            <div class="sc-shortcuts-guide">
+                <span class="sc-shortcuts-label">Raccourcis clavier :</span>
+                <span class="sc-key-badge">← Passer</span>
+                <span class="sc-key-badge">B Mettre de côté</span>
+                <span class="sc-key-badge">→ Matcher</span>
+            </div>
+        </div>
+
+    </div>{# end sc-container #}
+</div>{# end sc-page-wrapper #}
+
+{# =========================================================================
+   GLOBAL FOOTER BAR
+   ========================================================================= #}
+<footer class="pe-footer-bar">
+    <div class="pe-footer-brand-copy">
+        <span class="pe-footer-brand">TinderNance</span>
+        <span>© 2025 Plateforme intelligente de recrutement en alternance.</span>
+    </div>
+    <div class="pe-footer-links">
+        <a href="#" class="pe-footer-link">Mentions légales</a>
+        <a href="#" class="pe-footer-link">Protection des données</a>
+        <a href="#" class="pe-footer-link">Aide &amp; FAQ</a>
+    </div>
+</footer>
+{% endblock %}
