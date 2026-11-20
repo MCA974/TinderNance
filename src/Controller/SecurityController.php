@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
+use App\Enum\UserRole;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -12,7 +14,15 @@ class SecurityController extends AbstractController
     #[Route('/login', name: 'app_login', methods: ['GET', 'POST'])]
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
-        if ($this->getUser()) {
+        $currentUser = $this->getUser();
+        if ($currentUser instanceof User) {
+            if ($currentUser->getRole() === UserRole::COMPANY) {
+                return $this->redirectToRoute('app_recruteur_profil');
+            }
+            if ($currentUser->getRole() === UserRole::STUDENT) {
+                return $this->redirectToRoute('app_profil_etudiant');
+            }
+
             return $this->redirectToRoute('app_home');
         }
 

@@ -25,6 +25,7 @@
         {% endif %}
     </head>
     <body>
+        {% block header %}
         <header class="app-header">
             <a href="{{ path('app_home') }}" class="brand-logo">
                 <div class="brand-icon">
@@ -36,17 +37,24 @@
             </a>
             <nav class="nav-links">
                 {% if app.user %}
+                    {% if app.user.role and app.user.role.value == 'STUDENT' %}
+                        <a href="{{ path('app_profil_etudiant') }}" class="nav-link">Mon Profil Étudiant</a>
+                    {% elseif app.user.role and app.user.role.value == 'COMPANY' %}
+                        <a href="{{ path('app_recruteur_profil') }}" class="nav-link">Espace Recruteur</a>
+                    {% endif %}
                     <span class="nav-link" style="color: var(--color-primary-indigo);">
-                        {{ app.user.firstName }} ({{ app.user.role.value }})
+                        {{ app.user.firstName }} ({{ app.user.role ? (app.user.role.value == 'STUDENT' ? 'Étudiant' : 'Entreprise') : 'Membre' }})
                     </span>
-                    <a href="{{ path('app_logout') }}" class="nav-link">Déconnexion</a>
+                    <a href="{{ path('app_logout') }}" class="nav-link" style="color: var(--color-secondary);">Déconnexion</a>
                 {% else %}
                     <a href="{{ path('app_login') }}" class="nav-link">Connexion</a>
                     <a href="{{ path('app_register') }}" class="nav-link btn-ghost" style="padding: 0.45rem 1.15rem;">Inscription</a>
                 {% endif %}
             </nav>
         </header>
+        {% endblock %}
 
+        {% block main %}
         <main class="main-wrapper">
             {# Flash Messages #}
             {% for label, messages in app.flashes %}
@@ -70,5 +78,6 @@
 
             {% block body %}{% endblock %}
         </main>
+        {% endblock %}
     </body>
 </html>

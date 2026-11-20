@@ -4,20 +4,23 @@
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('styles/profil_etudiant.css') }}">
 {% endblock %}
 
-{% block body %}
+{% block header %}{% endblock %}
+
+{% block main %}
 {# =========================================================================
    TOP NAVIGATION BAR
    ========================================================================= #}
 <nav class="pe-navbar">
-    <a href="{{ path('app_home') }}" class="pe-nav-brand">
-        <img src="{{ asset('icons/logo.svg') }}" alt="" width="24" height="24">
-        <span>TinderNance</span>
+    <a href="{{ path('app_home') }}" class="brand-logo" style="text-decoration: none;">
+        <div class="brand-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+        </div>
+        <span>Tinder<span class="highlight">nance</span></span>
     </a>
 
     <div class="pe-nav-links">
@@ -44,6 +47,10 @@
                 <p class="pe-nav-user-role">Alternant Dev</p>
             </div>
         </div>
+
+        <a href="{{ path('app_logout') }}" class="pe-nav-link" style="color: var(--color-secondary); font-weight: 600;" title="Déconnexion">
+            Déconnexion
+        </a>
     </div>
 </nav>
 

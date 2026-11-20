@@ -22,19 +22,16 @@ class ProfilController extends AbstractController
     ) {
     }
 
-    #[Route('/', name: 'app_home', methods: ['GET'])]
-    public function home(): Response
-    {
-        return $this->redirectToRoute('app_profil_etudiant');
-    }
-
     #[Route('/profil/etudiant/{id?}', name: 'app_profil_etudiant', methods: ['GET', 'POST'])]
     public function etudiant(Request $request, ?int $id = null): Response
     {
         $studentProfile = null;
+        $currentUser = $this->getUser();
 
         try {
-            if ($id !== null) {
+            if ($currentUser instanceof User && $currentUser->getStudentProfile()) {
+                $studentProfile = $currentUser->getStudentProfile();
+            } elseif ($id !== null) {
                 $studentProfile = $this->studentProfileRepository->find($id);
             }
 
@@ -48,7 +45,7 @@ class ProfilController extends AbstractController
         // Initialisation du DTO avec les données du profil existant ou les valeurs par défaut
         $dto = new StudentProfileDto();
         if ($studentProfile) {
-            $user = $studentProfile->getUser();
+            $user = $studentProfile->getUser() ?? ($currentUser instanceof User ? $currentUser : null);
             $dto->fullName = $user ? trim(($user->getFirstName() ?? '') . ' ' . ($user->getLastName() ?? '')) : 'Lucas Moreau';
             $dto->email = $user?->getEmail() ?? 'lucas.moreau@student-hetic.net';
             $dto->searchRegion = $studentProfile->getSearchArea()->getRegion() ?? $studentProfile->getSearchArea()->getCity() ?? 'Paris & Petite Couronne (75, 92, 93, 94)';

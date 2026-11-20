@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\DTO\CompanyProfileDto;
+use App\Entity\User;
 use App\Enum\EmployeeCountRange;
 use App\Form\CompanyProfileType;
 use App\Repository\CompanyProfileRepository;
@@ -30,9 +31,12 @@ class RecruteurController extends AbstractController
     public function profil(Request $request, ?int $id = null): Response
     {
         $companyProfile = null;
+        $currentUser = $this->getUser();
 
         try {
-            if ($id !== null) {
+            if ($currentUser instanceof User && $currentUser->getCompanyProfile()) {
+                $companyProfile = $currentUser->getCompanyProfile();
+            } elseif ($id !== null) {
                 $companyProfile = $this->companyProfileRepository->find($id);
             }
 
@@ -46,7 +50,7 @@ class RecruteurController extends AbstractController
         // Initialisation du DTO avec les données existantes ou les valeurs de démo
         $dto = new CompanyProfileDto();
         if ($companyProfile) {
-            $dto->companyName = $companyProfile->getCompanyName() ?? 'Acme Fintech';
+            $dto->companyName = $companyProfile->getCompanyName() ?? ($currentUser instanceof User ? ($currentUser->getFirstName() . ' ' . $currentUser->getLastName()) : 'Acme Fintech');
             $dto->sector = $companyProfile->getSector() ?? 'Fintech / SaaS';
             $dto->shortPresentation = $companyProfile->getShortPresentation() ?? 'Nous construisons la prochaine génération d\'outils financiers pour les PME européennes.';
             $dto->employeeCount = $companyProfile->getEmployeeCount()?->value ?? EmployeeCountRange::RANGE_11_49->value;
