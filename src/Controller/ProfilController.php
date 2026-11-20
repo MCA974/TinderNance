@@ -7,7 +7,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/profil')]
 class ProfilController extends AbstractController
 {
     public function __construct(
@@ -15,7 +14,13 @@ class ProfilController extends AbstractController
     ) {
     }
 
-    #[Route('/etudiant/{id?}', name: 'app_profil_etudiant', methods: ['GET'])]
+    #[Route('/', name: 'app_home', methods: ['GET'])]
+    public function home(): Response
+    {
+        return $this->redirectToRoute('app_profil_etudiant');
+    }
+
+    #[Route('/profil/etudiant/{id?}', name: 'app_profil_etudiant', methods: ['GET'])]
     public function etudiant(?int $id = null): Response
     {
         $studentProfile = null;
