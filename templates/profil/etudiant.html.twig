@@ -1,0 +1,402 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil Étudiant - TinderNance{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('styles/profil_etudiant.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="pe-page" data-node-id="71:728">
+    <div class="pe-container">
+        
+        {# =====================================================================
+           TOP BAR: Job Vacancy Selector & Pipeline Pulse
+           ===================================================================== #}
+        <header class="pe-topbar" data-node-id="71:730">
+            <div class="pe-topbar-left">
+                <div class="pe-target-badge" data-node-id="71:732">
+                    <div class="pe-pulse-indicator">
+                        <span class="pe-pulse-ping"></span>
+                        <span class="pe-pulse-dot"></span>
+                    </div>
+                    <div class="pe-target-texts">
+                        <p class="pe-target-label">POSTE CIBLÉ</p>
+                        <p class="pe-target-value">
+                            <span>Développeur Fullstack React / Node</span>
+                            <img src="{{ asset('icons/chevron_down.svg') }}" alt="" width="9" height="6">
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pe-topbar-pill pe-pill-pending" data-node-id="71:743">
+                    <img src="{{ asset('icons/users.svg') }}" alt="" width="16" height="8">
+                    <span><strong>32</strong> candidatures en attente</span>
+                </div>
+
+                <div class="pe-topbar-pill pe-pill-status" data-node-id="71:749">
+                    <img src="{{ asset('icons/flame.svg') }}" alt="" width="11" height="13">
+                    <span>Statut : <strong>3 matches</strong> cette semaine</span>
+                </div>
+            </div>
+
+            <div class="pe-topbar-right" data-node-id="71:754">
+                <button type="button" class="pe-btn pe-btn-secondary" data-node-id="71:755">
+                    <img src="{{ asset('icons/filter.svg') }}" alt="" width="14" height="14">
+                    <span>Critères</span>
+                </button>
+                <button type="button" class="pe-btn pe-btn-primary" data-node-id="71:760">
+                    <img src="{{ asset('icons/plus.svg') }}" alt="" width="15" height="15">
+                    <span>Nouvelle annonce</span>
+                </button>
+            </div>
+        </header>
+
+        {# =====================================================================
+           MAIN WORKSPACE: 12-Column Matching Canvas
+           ===================================================================== #}
+        <main class="pe-workspace-grid" data-node-id="71:765">
+            
+            {# -----------------------------------------------------------------
+               LEFT: Candidate Card & Swipe Actions (8 Cols)
+               ----------------------------------------------------------------- #}
+            <div class="pe-col-left" data-node-id="71:766">
+                <article class="pe-match-card" data-node-id="71:767">
+                    
+                    {# Banner: Candidate liked your job #}
+                    <div class="pe-glow-banner" data-node-id="71:768">
+                        <div class="pe-glow-banner-left">
+                            <img src="{{ asset('icons/bolt.svg') }}" alt="" width="14" height="17">
+                            <h2 class="pe-glow-banner-title">CE CANDIDAT A LIKÉ VOTRE OFFRE !</h2>
+                        </div>
+                        <div class="pe-glow-banner-pill">
+                            Match instantané si vous validez
+                        </div>
+                    </div>
+
+                    {# Hero Cover & Avatar Composition #}
+                    <div class="pe-hero-cover" data-node-id="71:873">
+                        <div class="pe-hero-status-pill" data-node-id="71:876">
+                            <span class="pe-hero-status-dot"></span>
+                            <span>Candidat actif • Répond en &lt; 2h</span>
+                        </div>
+
+                        <div class="pe-hero-bottom-row" data-node-id="71:886">
+                            <div class="pe-avatar-wrapper" data-node-id="71:887">
+                                {% set avatarSrc = studentProfile and studentProfile.photoUrl ? studentProfile.photoUrl : asset('images/student_avatar.png') %}
+                                <img src="{{ avatarSrc }}" alt="{{ studentProfile and studentProfile.user ? studentProfile.user.firstName : 'Thomas' }}" class="pe-avatar-img">
+                                <img src="{{ asset('icons/badge_flag.svg') }}" alt="" class="pe-avatar-flag-badge">
+                            </div>
+
+                            <div class="pe-hero-title-group" data-node-id="71:891">
+                                <div class="pe-hero-name-row">
+                                    <h1 class="pe-hero-name">
+                                        {{ studentProfile and studentProfile.user ? studentProfile.user.firstName : 'Thomas' }}
+                                    </h1>
+                                    {# Age is from design; not present in StudentProfile entity #}
+                                    <span class="pe-hero-age">18 ans</span>
+                                </div>
+                                <p class="pe-hero-subtitle">
+                                    {% if studentProfile and studentProfile.targetStudyLevel %}
+                                        Alternance {{ studentProfile.targetSector ?? "Concepteur Développeur d'Applications" }} ({{ studentProfile.targetStudyLevel.value }})
+                                    {% else %}
+                                        Alternance Concepteur Développeur d'Applications (Bac+3)
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {# Card Body Metrics & Highlights #}
+                    <div class="pe-card-body" data-node-id="71:776">
+                        
+                        {# 3 Parameter Pills #}
+                        <div class="pe-params-grid" data-node-id="71:777">
+                            <div class="pe-param-box pe-param-box-blue" data-node-id="71:778">
+                                <div class="pe-param-header">
+                                    <img src="{{ asset('icons/school.svg') }}" alt="" width="14" height="12">
+                                    <span>ÉCOLE / CFA</span>
+                                </div>
+                                <p class="pe-param-value">
+                                    {{ studentProfile ? (studentProfile.schoolName ?? 'École 42 Paris') : 'École 42 Paris' }}
+                                </p>
+                                <p class="pe-param-sub">
+                                    {% if studentProfile and studentProfile.schoolStatus %}
+                                        Scolarité confirmée • {{ studentProfile.schoolStatus.value }}
+                                    {% else %}
+                                        Scolarité confirmée • Admis
+                                    {% endif %}
+                                </p>
+                            </div>
+
+                            <div class="pe-param-box pe-param-box-amber" data-node-id="71:787">
+                                <div class="pe-param-header">
+                                    <img src="{{ asset('icons/calendar_rythme.svg') }}" alt="" width="13" height="14">
+                                    <span>RYTHME VALIDÉ</span>
+                                </div>
+                                <p class="pe-param-value">
+                                    {{ studentProfile ? (studentProfile.alternationRhythm ?? '3j Entr. / 2j CFA') : '3j Entr. / 2j CFA' }}
+                                </p>
+                                <p class="pe-param-sub">
+                                    {% set durationStr = studentProfile and studentProfile.contractDuration ? studentProfile.contractDuration.value : '24 mois' %}
+                                    {% set startStr = studentProfile and studentProfile.desiredStartDate ? studentProfile.desiredStartDate|date('M Y') : 'Sept 2025' %}
+                                    Durée : {{ durationStr }} ({{ startStr }})
+                                </p>
+                            </div>
+
+                            <div class="pe-param-box pe-param-box-blue" data-node-id="71:796">
+                                <div class="pe-param-header">
+                                    <img src="{{ asset('icons/pin.svg') }}" alt="" width="9" height="13">
+                                    <span>LOCALISATION</span>
+                                </div>
+                                <p class="pe-param-value">
+                                    {{ studentProfile and studentProfile.searchArea ? (studentProfile.searchArea.city ?? 'Boulogne-Billancourt') : 'Boulogne-Billancourt' }}
+                                </p>
+                                <p class="pe-param-sub">
+                                    Rayon {{ studentProfile and studentProfile.searchArea ? studentProfile.searchArea.radiusKm ?? 20 : 20 }} km
+                                </p>
+                            </div>
+                        </div>
+
+                        {# Pitch / Bio #}
+                        <section class="pe-bio-card" data-node-id="71:805">
+                            <h3 class="pe-section-label">BIO</h3>
+                            <div class="pe-bio-text">
+                                {% if studentProfile and studentProfile.bio %}
+                                    « {{ studentProfile.bio }} »
+                                {% else %}
+                                    « Passionné de <strong>React, TypeScript et Node.js</strong>. J'ai déjà déployé 2 projets complets en
+                                    production, je suis autonome et très curieux des bonnes pratiques DevOps. Je cherche une
+                                    équipe agile pour monter en compétences et apporter une réelle valeur opérationnelle dès le
+                                    premier trimestre ! »
+                                {% endif %}
+                            </div>
+                        </section>
+
+                        {# Tech Stack & Frameworks #}
+                        <div class="pe-section-group" data-node-id="71:810">
+                            <h3 class="pe-section-label">STACK TECHNIQUE & FRAMEWORKS</h3>
+                            <div class="pe-tags-wrap" data-node-id="71:813">
+                                <span class="pe-tag pe-tag-highlight"><span class="pe-tag-dot"></span>TypeScript</span>
+                                <span class="pe-tag pe-tag-highlight"><span class="pe-tag-dot"></span>React.js</span>
+                                <span class="pe-tag pe-tag-highlight"><span class="pe-tag-dot"></span>Node / NestJS</span>
+                                <span class="pe-tag pe-tag-standard">PostgreSQL</span>
+                                <span class="pe-tag pe-tag-standard">Docker</span>
+                                <span class="pe-tag pe-tag-standard">TailwindCSS</span>
+                                <span class="pe-tag pe-tag-standard">Git / GitHub Actions</span>
+                            </div>
+                        </div>
+
+                        {# Soft Skills #}
+                        <div class="pe-section-group" data-node-id="71:831">
+                            <h3 class="pe-section-label">QUALITÉS & SAVOIR-ÊTRE VÉRIFIÉS</h3>
+                            <div class="pe-tags-wrap" data-node-id="71:834">
+                                <span class="pe-tag pe-tag-softskill">🤝 Esprit d'équipe</span>
+                                <span class="pe-tag pe-tag-softskill">🔍 Rigueur & Tests unitaires</span>
+                                <span class="pe-tag pe-tag-softskill">🚀 Curiosité technique</span>
+                                <span class="pe-tag pe-tag-softskill">💬 Bonne communication</span>
+                            </div>
+                        </div>
+
+                        {# Recent Projects #}
+                        <div class="pe-section-group" data-node-id="71:843">
+                            <h3 class="pe-section-label">PROJETS RÉALISÉS & CODE OPEN SOURCE</h3>
+                            <div class="pe-projects-grid" data-node-id="71:846">
+                                <div class="pe-project-item">
+                                    <div class="pe-project-icon-circle pe-project-icon-purple">
+                                        <img src="{{ asset('icons/project_saas.svg') }}" alt="" width="18" height="18">
+                                    </div>
+                                    <div class="pe-project-info">
+                                        <p class="pe-project-title">PulseMetrics SaaS</p>
+                                        <p class="pe-project-desc">Next.js 14, Tailwind, Prisma, Stripe</p>
+                                    </div>
+                                </div>
+                                <div class="pe-project-item">
+                                    <div class="pe-project-icon-circle pe-project-icon-red">
+                                        <img src="{{ asset('icons/project_microservices.svg') }}" alt="" width="20" height="16">
+                                    </div>
+                                    <div class="pe-project-info">
+                                        <p class="pe-project-title">Microservices Engine</p>
+                                        <p class="pe-project-desc">Architecture Node/Nest & RabbitMQ</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {# Mini CV Button #}
+                        <div class="pe-cv-center" data-node-id="71:865">
+                            <a href="{{ studentProfile and studentProfile.cvUrl ? studentProfile.cvUrl : '#' }}" target="_blank" rel="noopener noreferrer" class="pe-btn-mini-cv">
+                                <img src="{{ asset('icons/eye.svg') }}" alt="" width="17" height="12">
+                                <span>Consulter le mini-CV (PDF certifié {{ studentProfile ? (studentProfile.schoolName ?? '42 Paris') : '42 Paris' }})</span>
+                                <img src="{{ asset('icons/external_link.svg') }}" alt="" width="9" height="9">
+                            </a>
+                        </div>
+
+                        {# Decision Dock #}
+                        <div class="pe-dock-wrapper" data-node-id="71:900">
+                            <div class="pe-dock-capsule">
+                                <button type="button" class="pe-dock-btn-round" title="Passer ce candidat" data-node-id="71:902">
+                                    <img src="{{ asset('icons/pass.svg') }}" alt="Passer" width="18" height="18">
+                                </button>
+                                <button type="button" class="pe-dock-btn-round sm" title="Mettre en attente" data-node-id="71:906">
+                                    <img src="{{ asset('icons/bookmark.svg') }}" alt="En attente" width="14" height="18">
+                                </button>
+                                <button type="button" class="pe-dock-btn-primary" data-node-id="71:910">
+                                    <img src="{{ asset('icons/heart.svg') }}" alt="" width="24" height="22">
+                                    <span>Accepter le Match</span>
+                                </button>
+                                <button type="button" class="pe-dock-btn-round sm soft-blue" title="Contacter directement" data-node-id="71:916">
+                                    <img src="{{ asset('icons/send.svg') }}" alt="Message" width="15" height="12">
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </article>
+            </div>
+
+            {# -----------------------------------------------------------------
+               RIGHT: Criteria, Direct Visio Booking & Commute (4 Cols)
+               ----------------------------------------------------------------- #}
+            <aside class="pe-col-right" data-node-id="71:920">
+                
+                {# Card 1: Score d'adéquation #}
+                <div class="pe-side-card" data-node-id="71:921">
+                    <div class="pe-side-card-header">
+                        <h2 class="pe-side-card-title">
+                            <img src="{{ asset('icons/clipboard_check.svg') }}" alt="" width="20" height="18">
+                            <span>Score d'Adéquation</span>
+                        </h2>
+                        <span class="pe-fit-pill">96% Fit</span>
+                    </div>
+
+                    <div class="pe-radial-metric-box" data-node-id="71:931">
+                        <div class="pe-radial-circle-wrap">
+                            <img src="{{ asset('icons/radial_progress.svg') }}" alt="" class="pe-radial-svg">
+                            <span class="pe-radial-center-text">4/4</span>
+                        </div>
+                        <div class="pe-radial-texts">
+                            <p class="pe-radial-title">Tous vos critères requis sont cochés</p>
+                            <p class="pe-radial-desc">Profil idéal pour le sprint Q4</p>
+                        </div>
+                    </div>
+
+                    <div class="pe-criteria-list" data-node-id="71:942">
+                        <div class="pe-criteria-item">
+                            <div class="pe-criteria-check">
+                                <img src="{{ asset('icons/checkmark.svg') }}" alt="" width="11" height="8">
+                            </div>
+                            <div class="pe-criteria-text-col">
+                                <p class="pe-criteria-title">Rythme compatible 3j/2j</p>
+                                <p class="pe-criteria-desc">Lundi à Mercredi en entreprise</p>
+                            </div>
+                        </div>
+
+                        <div class="pe-criteria-item">
+                            <div class="pe-criteria-check">
+                                <img src="{{ asset('icons/checkmark.svg') }}" alt="" width="11" height="8">
+                            </div>
+                            <div class="pe-criteria-text-col">
+                                <p class="pe-criteria-title">Niveau Bac+3 RNCP certifié</p>
+                                <p class="pe-criteria-desc">Titre Concepteur Développeur</p>
+                            </div>
+                        </div>
+
+                        <div class="pe-criteria-item">
+                            <div class="pe-criteria-check">
+                                <img src="{{ asset('icons/checkmark.svg') }}" alt="" width="11" height="8">
+                            </div>
+                            <div class="pe-criteria-text-col">
+                                <p class="pe-criteria-title">Proximité géographique &lt; 20 km</p>
+                                <p class="pe-criteria-desc">Boulogne-Billancourt (Trajet direct)</p>
+                            </div>
+                        </div>
+
+                        <div class="pe-criteria-item">
+                            <div class="pe-criteria-check">
+                                <img src="{{ asset('icons/checkmark.svg') }}" alt="" width="11" height="8">
+                            </div>
+                            <div class="pe-criteria-text-col">
+                                <p class="pe-criteria-title">Stack React.js & Node confirmée</p>
+                                <p class="pe-criteria-desc">Validé par les projets GitHub</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pe-grants-box" data-node-id="71:983">
+                        <p class="pe-section-label">AIDES FINANCIÈRES ÉTAT</p>
+                        <div class="pe-grants-row">
+                            <p class="pe-grants-label">Aide à l'embauche éligible</p>
+                            <p class="pe-grants-amount">6 000 € net</p>
+                        </div>
+                    </div>
+                </div>
+
+                {# Card 2: Fast Action - Direct Visio Booking #}
+                <div class="pe-visio-card" data-node-id="71:991">
+                    <div class="pe-visio-header">
+                        <div class="pe-visio-icon-circle">
+                            <img src="{{ asset('icons/video_call.svg') }}" alt="" width="19" height="15">
+                        </div>
+                        <div class="pe-visio-title-group">
+                            <h3 class="pe-visio-title">Accélérateur d'embauche</h3>
+                            <p class="pe-visio-subtitle">Proposer un call informel de 15 minutes</p>
+                        </div>
+                    </div>
+                    <p class="pe-visio-desc">
+                        Envoyez vos créneaux Calendly ou Google Meet directement. Thomas recevra une notification instantanée.
+                    </p>
+                    <button type="button" class="pe-btn-visio" data-node-id="71:1004">
+                        <img src="{{ asset('icons/calendar_call.svg') }}" alt="" width="14" height="15">
+                        <span>Inviter à un premier call visio</span>
+                    </button>
+                </div>
+
+                {# Card 3: Commute Radar #}
+                <div class="pe-commute-card" data-node-id="71:1009">
+                    <div class="pe-commute-header">
+                        <img src="{{ asset('icons/commute_pin.svg') }}" alt="" width="11" height="13">
+                        <h3 class="pe-section-label">TRAJET DOMICILE - BUREAUX</h3>
+                    </div>
+                    <div class="pe-commute-map-wrap" data-node-id="71:1014">
+                        <img src="{{ asset('images/map_bg.png') }}" alt="Carte trajet domicile" class="pe-commute-map-bg">
+                        <div class="pe-commute-pill">
+                            15 min via Métro 9 & Bus 126
+                        </div>
+                    </div>
+                </div>
+
+            </aside>
+        </main>
+
+        {# =====================================================================
+           FOOTER: Bottom Stats Strip & Keyboard Navigation
+           ===================================================================== #}
+        <footer class="pe-footer" data-node-id="71:1018">
+            <div class="pe-footer-stats">
+                <div class="pe-footer-stat-item">
+                    <img src="{{ asset('icons/stats_views.svg') }}" alt="" width="15" height="15">
+                    <p class="m-0"><strong>18</strong> <span>profils examinés aujourd'hui</span></p>
+                </div>
+                <span class="pe-footer-dot">•</span>
+                <div class="pe-footer-stat-item">
+                    <img src="{{ asset('icons/stats_matches.svg') }}" alt="" width="16" height="15">
+                    <p class="m-0"><strong>5</strong> <span>matches confirmés</span></p>
+                </div>
+            </div>
+
+            <div class="pe-footer-shortcuts">
+                <p class="pe-footer-shortcuts-label">Raccourcis clavier :</p>
+                <span class="pe-kbd-badge">← Passer</span>
+                <span class="pe-kbd-badge">B Mettre de côté</span>
+                <span class="pe-kbd-badge">→ Matcher</span>
+            </div>
+        </footer>
+
+    </div>
+</div>
+{% endblock %}
