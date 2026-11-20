@@ -1,20 +1,19 @@
-{# templates/recruteur/profil.html.twig #}
 {% extends 'base.html.twig' %}
 
-{% block title %}Gestion Recruteur — TinderNance{% endblock %}
+{% block title %}Mon Profil Entreprise - TinderNance{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
-    <link rel="stylesheet" href="{{ asset('styles/profil_recruteur.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/profil_etudiant.css') }}">
 {% endblock %}
 
 {% block header %}{% endblock %}
 
 {% block main %}
-<div data-controller="recruteur" data-recruteur-modal-outlet=".rp-modal-overlay">
-
-{# ═══════════════════════════════ NAVBAR ══════════════════════════════════ #}
-<nav class="rp-navbar">
+{# =========================================================================
+   TOP NAVIGATION BAR
+   ========================================================================= #}
+<nav class="pe-navbar">
     <a href="{{ path('app_home') }}" class="brand-logo" style="text-decoration: none;">
         <div class="brand-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
@@ -24,492 +23,397 @@
         <span>Tinder<span class="highlight">nance</span></span>
     </a>
 
-    <div class="rp-navbar__nav">
-        <a href="#" class="rp-navbar__link">
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-            Offres
+    <div class="pe-nav-links">
+        <a href="#" class="pe-nav-link">Offres</a>
+        <a href="#" class="pe-nav-link">Candidats</a>
+        <a href="#" class="pe-nav-link">
+            <span>Matches &amp; Messages</span>
+            <span class="pe-badge-count">5</span>
         </a>
-        <a href="#" class="rp-navbar__link rp-navbar__link--active">
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            Candidats
-        </a>
-        <a href="#" class="rp-navbar__link">
-            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            Messages
-            <span class="rp-navbar__badge">5</span>
-        </a>
-        <a href="{{ path('app_recruteur_profil') }}" class="rp-navbar__link">
-            Mon Profil &amp; Vitrine
-        </a>
+        <a href="{{ path('app_recruteur_profil') }}" class="pe-nav-link active">Mon Profil &amp; Vitrine</a>
     </div>
 
-    <div class="rp-navbar__actions">
-        <div class="rp-navbar__notif">
-            <svg width="15" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-            <div class="rp-navbar__notif-dot">3</div>
-        </div>
-        <div class="rp-navbar__user">
-            <div class="rp-navbar__avatar" style="position:relative;">
-                <img src="{{ asset('images/recruiter_avatar.jpeg') }}" alt="Recruteur" onerror="this.style.display='none';this.parentNode.innerHTML='🏢';">
-                <div class="rp-navbar__status-dot"></div>
+    <div class="pe-nav-user-area">
+        <button type="button" class="pe-nav-bell-btn" title="Notifications">
+            <img src="{{ asset('icons/bell.svg') }}" alt="" width="18" height="18">
+            <span class="pe-nav-bell-badge"></span>
+        </button>
+
+        <div class="pe-nav-user-pill">
+            {% set navAvatar = dto.logoUrl ? dto.logoUrl : asset('images/recruiter_avatar.jpeg') %}
+            <img src="{{ navAvatar }}" alt="Avatar" class="pe-nav-user-avatar" onerror="this.src='{{ asset('images/recruiter_avatar.jpeg') }}';">
+            <div class="pe-nav-user-meta">
+                <p class="pe-nav-user-name">{{ dto.contactName ?: (app.user ? app.user.firstName ~ ' ' ~ app.user.lastName : 'Recruteur') }}</p>
+                <p class="pe-nav-user-role">Recruteur</p>
             </div>
-            <div>
-                <div class="rp-navbar__username">{{ dto.companyName ?: 'Entreprise' }}</div>
-                <div class="rp-navbar__userrole">Recruteur</div>
-            </div>
         </div>
-        <a href="{{ path('app_logout') }}" class="rp-navbar__link" style="color: var(--rp-red); font-weight: 600;" title="Déconnexion">
+
+        <a href="{{ path('app_logout') }}" class="pe-nav-link" style="color: var(--color-secondary); font-weight: 600;" title="Déconnexion">
             Déconnexion
         </a>
     </div>
 </nav>
 
-{# ═══════════════════════════════ MAIN ═══════════════════════════════════ #}
-<main class="rp-main">
-<div class="rp-container">
-
-    {# Flash messages #}
-    {% for message in app.flashes('success') %}
-        <div class="rp-flash rp-flash--success">✅ {{ message }}</div>
+{# =========================================================================
+   MAIN CONTENT
+   ========================================================================= #}
+<div class="pe-page-body">
+    
+    {# Flash messages feedback #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="pe-alert pe-alert-{{ label }}">
+                <span>{{ message }}</span>
+            </div>
+        {% endfor %}
     {% endfor %}
-    {% for message in app.flashes('error') %}
-        <div class="rp-flash rp-flash--error">⚠️ {{ message }}</div>
-    {% endfor %}
 
-    {# ══════════ HEADER BAR — Pipeline Pulse ══════════ #}
-    <div class="rp-header-bar">
-        <div class="rp-header-bar__left">
-            <div class="rp-offer-pill">
-                <div class="rp-offer-pill__dot-wrapper">
-                    <div class="rp-offer-pill__dot-ring"></div>
-                    <div class="rp-offer-pill__dot"></div>
-                </div>
-                <div>
-                    <div class="rp-offer-pill__label">Poste ciblé</div>
-                    <div class="rp-offer-pill__value">{{ pipeline.currentOffer }}</div>
-                </div>
-                <svg width="9" height="6" fill="none" viewBox="0 0 9 6"><path d="M1 1l4 4 4-4" stroke="#464554" stroke-width="1.5" stroke-linecap="round"/></svg>
+    {# Header Row with View Switcher #}
+    <header class="pe-header-row">
+        <div class="pe-header-left">
+            <div class="pe-session-tag">
+                <span class="pe-session-dot"></span>
+                <span>ESPACE RECRUTEUR • SESSION ACTIVE</span>
             </div>
-
-            <div class="rp-stat-pill">
-                <svg width="16" height="8" fill="none" viewBox="0 0 16 8"><circle cx="4" cy="4" r="3" fill="#4648d4"/><circle cx="12" cy="4" r="3" fill="#4648d4"/></svg>
-                <span class="rp-stat-pill__count">{{ pipeline.pendingCount }}</span>
-                <span class="rp-stat-pill__label">candidatures en attente</span>
-            </div>
-
-            <div class="rp-stat-pill rp-stat-pill--muted">
-                <svg width="11" height="13" fill="none" viewBox="0 0 24 24" stroke="#464554" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                <span class="rp-stat-pill__label">Statut : <span>{{ pipeline.matchesThisWeek }} matches cette semaine</span></span>
-            </div>
+            <h1 class="pe-header-title">Mon Profil Entreprise</h1>
         </div>
 
-        <div class="rp-header-bar__right">
-            <button type="button" class="rp-btn rp-btn--secondary">
-                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/></svg>
-                Critères
+        <div class="pe-view-switcher">
+            <button type="button" class="pe-view-btn active" data-action="click->recruteur#switchView" data-recruteur-target="viewBtn">
+                <img src="{{ asset('icons/edit_pen.svg') }}" alt="" width="14" height="14">
+                <span>Éditer en tant qu'Entreprise</span>
             </button>
-            <button type="button" class="rp-btn rp-btn--primary"
-                    data-action="click->recruteur#openModal">
-                <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Nouvelle annonce
+            <button type="button" class="pe-view-btn" data-action="click->recruteur#switchView" data-recruteur-target="viewBtn">
+                <img src="{{ asset('icons/preview_eye.svg') }}" alt="" width="16" height="12">
+                <span>Aperçu public Alternant</span>
             </button>
         </div>
-    </div>
+    </header>
 
-    {# ══════════ WORKSPACE GRID ══════════ #}
-    <div class="rp-workspace">
+    {# Formulaire interactif relié au contrôleur Stimulus #}
+    {{ form_start(form, {'attr': {'class': 'pe-split-grid', 'data-controller': 'recruteur'}, 'enctype': 'multipart/form-data'}) }}
+        
+        {# Champs cachés pour l'effectif et l'état de pause #}
+        {{ form_widget(form.employeeCount, {'attr': {'data-recruteur-target': 'countHiddenInput'}}) }}
+        {{ form_widget(form.isPaused, {'attr': {'data-recruteur-target': 'isPausedInput'}}) }}
 
-        {# ───── LEFT 8 cols — Candidate card ───── #}
-        <div class="rp-col-8">
-            <div class="rp-card" data-recruteur-target="cardWrapper">
+        {# Champ fichier logo caché (déclenché via Stimulus) #}
+        {{ form_widget(form.logoFile, {'attr': {'class': 'd-none', 'style': 'display:none;', 'data-recruteur-target': 'fileInput', 'data-action': 'change->recruteur#onLogoSelected', 'accept': 'image/*'}}) }}
 
-                {# Like banner #}
-                {% if candidate.hasLikedOffer %}
-                <div class="rp-card__like-banner">
-                    <div class="rp-card__like-banner-left">
-                        <svg width="13" height="17" fill="white" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                        <span class="rp-card__like-label">Ce candidat a liké votre offre !</span>
+        {# =====================================================================
+           LEFT COLUMN: FORMULAIRE INTERACTIF (7 COLS)
+           ===================================================================== #}
+        <div class="pe-form-col">
+            
+            {# -----------------------------------------------------------------
+               CARD 1: Identité & Coordonnées de l'Entreprise (Étape 1 sur 3)
+               ----------------------------------------------------------------- #}
+            <section class="pe-card">
+                <div class="pe-card-header">
+                    <div class="pe-card-title-wrap">
+                        <img src="{{ asset('icons/identity_user.svg') }}" alt="" width="20" height="20">
+                        <h2 class="pe-card-title">Identité &amp; Coordonnées</h2>
                     </div>
-                    <span class="rp-card__instant-match">Match instantané si vous validez</span>
-                </div>
-                {% endif %}
-
-                {# Hero cover #}
-                <div class="rp-card__hero">
-                    <div class="rp-card__hero-top">
-                        <div class="rp-card__status-badge">
-                            <div class="rp-card__status-dot"></div>
-                            <span class="rp-card__status-text">{{ candidate.activeStatus }}</span>
-                        </div>
-                        {% if candidate.hasCfaDossier %}
-                        <div class="rp-card__cfa-badge">
-                            <svg width="17" height="16" fill="none" viewBox="0 0 24 24" stroke="#4648d4" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-                            <span class="rp-card__cfa-text">Dossier CFA certifié</span>
-                        </div>
-                        {% endif %}
-                    </div>
-                    <div class="rp-card__hero-bottom">
-                        <div class="rp-card__avatar">
-                            <img src="{{ asset('images/candidate_profile.png') }}"
-                                 alt="{{ candidate.name }}"
-                                 onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22112%22 height=%22112%22><rect width=%22112%22 height=%22112%22 fill=%22%23e1e0ff%22/><text x=%2256%22 y=%2272%22 text-anchor=%22middle%22 font-size=%2248%22>👤</text></svg>'">
-                        </div>
-                    </div>
+                    <span class="pe-card-step-badge">Étape 1 sur 3</span>
                 </div>
 
-                {# Card body #}
-                <div class="rp-card__body">
-
-                    {# Metric pills #}
-                    <div class="rp-metrics">
-                        <div class="rp-metric">
-                            <div class="rp-metric__header">
-                                <svg width="14" height="11" fill="none" viewBox="0 0 24 24" stroke="#464554" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-                                <span class="rp-metric__label">École / CFA</span>
-                            </div>
-                            <div class="rp-metric__value">{{ candidate.school }}</div>
-                            <div class="rp-metric__sub">Scolarité confirmée • {{ candidate.schoolStatus }}</div>
-                        </div>
-
-                        <div class="rp-metric rp-metric--amber">
-                            <div class="rp-metric__header">
-                                <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="#653e00" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                                <span class="rp-metric__label">Rythme validé</span>
-                            </div>
-                            <div class="rp-metric__value">{{ candidate.rhythm }}</div>
-                            <div class="rp-metric__sub">Durée : {{ candidate.duration }}</div>
-                        </div>
-
-                        <div class="rp-metric rp-metric--location">
-                            <div class="rp-metric__header">
-                                <svg width="9" height="13" fill="none" viewBox="0 0 24 24" stroke="#464554" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                                <span class="rp-metric__label">Localisation</span>
-                            </div>
-                            <div class="rp-metric__value">{{ candidate.location }}</div>
-                            <div class="rp-metric__sub">15 min de vos bureaux</div>
-                        </div>
-                    </div>
-
-                    {# Bio #}
-                    <div class="rp-bio-block">
-                        <span class="rp-block-label">Son accroche personnalisée</span>
-                        <p class="rp-bio-text">{{ candidate.bio|raw }}</p>
-                    </div>
-
-                    {# Stack technique #}
-                    <div>
-                        <span class="rp-block-label" style="display:block;margin-bottom:6px;">Stack technique &amp; Frameworks</span>
-                        <div class="rp-pill-group">
-                            {% for tech in candidate.stack %}
-                                {% if loop.index <= 3 %}
-                                    <span class="rp-pill rp-pill--primary">
-                                        <span class="rp-pill__dot"></span>{{ tech }}
-                                    </span>
-                                {% else %}
-                                    <span class="rp-pill rp-pill--muted">{{ tech }}</span>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    {# Soft skills #}
-                    <div>
-                        <span class="rp-block-label" style="display:block;margin-bottom:6px;">Qualités &amp; Savoir-être vérifiés</span>
-                        <div class="rp-pill-group">
-                            {% for skill in candidate.softSkills %}
-                                <span class="rp-pill rp-pill--soft">{{ skill }}</span>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    {# Projects #}
-                    <div>
-                        <span class="rp-block-label" style="display:block;margin-bottom:6px;">Projets réalisés &amp; Code open source</span>
-                        <div class="rp-projects">
-                            {% for project in candidate.projects %}
-                                <div class="rp-project">
-                                    <div class="rp-project__icon {{ loop.first ? 'rp-project__icon--purple' : 'rp-project__icon--red' }}">
-                                        {{ loop.first ? '⚡' : '🔧' }}
-                                    </div>
-                                    <div>
-                                        <div class="rp-project__name">{{ project.name }}</div>
-                                        <div class="rp-project__tech">{{ project.tech }}</div>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    {# CV link #}
-                    <div style="display:flex;justify-content:center;padding-top:8px;">
-                        <a href="#" class="rp-cv-link">
-                            <svg width="17" height="11" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                            Consulter le mini-CV (PDF certifié)
-                            <svg width="9" height="9" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                        </a>
-                    </div>
-
-                    {# Swipe actions #}
-                    <div class="rp-swipe-actions">
-                        <button type="button" class="rp-action-btn rp-action-btn--pass"
-                                data-action="click->recruteur#pass">
-                            ✕ Passer
-                        </button>
-                        <button type="button" class="rp-action-btn rp-action-btn--validate"
-                                data-action="click->recruteur#validate">
-                            ✓ Valider le match
+                <div class="pe-identity-profile-row">
+                    <div class="pe-avatar-box">
+                        {% set companyLogo = dto.logoUrl ? dto.logoUrl : asset('images/company_logo.jpeg') %}
+                        <img src="{{ companyLogo }}" alt="Logo" class="pe-avatar-photo" data-recruteur-target="avatarImg" onerror="this.src='{{ asset('images/company_logo.jpeg') }}';">
+                        <button type="button" class="pe-avatar-change-btn" title="Changer le logo" data-action="click->recruteur#triggerLogoUpload">
+                            <img src="{{ asset('icons/camera.svg') }}" alt="" width="13" height="12">
                         </button>
                     </div>
 
-                </div>{# end card body #}
-            </div>{# end rp-card #}
-        </div>{# end col-8 #}
-
-        {# ───── RIGHT 4 cols — Company profile + form ───── #}
-        <div class="rp-col-4">
-            <div class="rp-right-panel">
-
-                {# Pipeline stats #}
-                <div class="rp-panel">
-                    <h2 class="rp-panel__title">📊 Pipeline de la semaine</h2>
-                    <div class="rp-stats-row">
-                        <div class="rp-mini-stat">
-                            <div class="rp-mini-stat__value">{{ pipeline.pendingCount }}</div>
-                            <div class="rp-mini-stat__label">En attente</div>
+                    <div class="pe-identity-profile-info">
+                        <div class="pe-identity-name-row">
+                            <h3 class="pe-identity-name" data-recruteur-target="previewName">{{ dto.companyName }}</h3>
+                            <img src="{{ asset('icons/verified_check.svg') }}" alt="Vérifié" width="18" height="18">
                         </div>
-                        <div class="rp-mini-stat">
-                            <div class="rp-mini-stat__value">{{ pipeline.matchesThisWeek }}</div>
-                            <div class="rp-mini-stat__label">Matches</div>
-                        </div>
-                        <div class="rp-mini-stat">
-                            <div class="rp-mini-stat__value">1</div>
-                            <div class="rp-mini-stat__label">Offre active</div>
+                        <p class="pe-identity-status-desc">
+                            Compte entreprise vérifié • Recherche active de talents en contrat d'alternance.
+                        </p>
+                        <div class="pe-identity-actions">
+                            <button type="button" class="pe-btn-mini pe-btn-mini-primary" data-action="click->recruteur#triggerLogoUpload">Changer le logo</button>
+                            <button type="button" class="pe-btn-mini pe-btn-mini-muted">Supprimer</button>
                         </div>
                     </div>
                 </div>
 
-                {# Company profile form #}
-                <div class="rp-panel">
-                    <div class="rp-company-header">
-                        <div class="rp-company-logo">
-                            {% if dto.logoUrl %}
-                                <img src="{{ asset(dto.logoUrl) }}" alt="{{ dto.companyName }}">
-                            {% else %}
-                                🏢
-                            {% endif %}
+                <div class="pe-fields-row">
+                    <div class="pe-form-group">
+                        <label class="pe-label">Nom de l'entreprise</label>
+                        {{ form_widget(form.companyName, {
+                            'attr': {
+                                'class': 'pe-input',
+                                'placeholder': 'ex: Acme Technologies',
+                                'data-recruteur-target': 'companyNameInput',
+                                'data-action': 'input->recruteur#updateName'
+                            }
+                        }) }}
+                        {{ form_errors(form.companyName) }}
+                    </div>
+                    <div class="pe-form-group">
+                        <label class="pe-label">Email professionnel de contact</label>
+                        {{ form_widget(form.email, {
+                            'attr': {
+                                'class': 'pe-input',
+                                'placeholder': 'recrutement@entreprise.com'
+                            }
+                        }) }}
+                        {{ form_errors(form.email) }}
+                    </div>
+                </div>
+
+                <div class="pe-fields-row">
+                    <div class="pe-form-group">
+                        <label class="pe-label">Nom du recruteur / Responsable RH</label>
+                        <div class="pe-input-icon-wrap">
+                            <img src="{{ asset('icons/identity_user.svg') }}" alt="" width="14" height="14" class="pe-input-icon">
+                            {{ form_widget(form.contactName, {
+                                'attr': {
+                                    'class': 'pe-input pe-input-with-icon',
+                                    'placeholder': 'Prénom Nom'
+                                }
+                            }) }}
                         </div>
-                        <div>
-                            <div class="rp-company-name-preview" data-recruteur-target="previewName">
-                                {{ dto.companyName ?: 'Mon Entreprise' }}
+                        {{ form_errors(form.contactName) }}
+                    </div>
+                    <div class="pe-form-group">
+                        <label class="pe-label">Secteur d'activité</label>
+                        <div class="pe-input-icon-wrap">
+                            <img src="{{ asset('icons/briefcase_doc.svg') }}" alt="" width="14" height="14" class="pe-input-icon">
+                            {{ form_widget(form.sector, {
+                                'attr': {
+                                    'class': 'pe-input pe-input-with-icon',
+                                    'placeholder': 'ex: Fintech, E-commerce, SaaS B2B...',
+                                    'data-recruteur-target': 'sectorInput',
+                                    'data-action': 'input->recruteur#updateSector'
+                                }
+                            }) }}
+                        </div>
+                        {{ form_errors(form.sector) }}
+                    </div>
+                </div>
+            </section>
+
+            {# -----------------------------------------------------------------
+               CARD 2: Structure & Taille de l'Entreprise (Étape 2 sur 3)
+               ----------------------------------------------------------------- #}
+            <section class="pe-card">
+                <div class="pe-card-header">
+                    <div class="pe-card-title-wrap">
+                        <img src="{{ asset('icons/school_cap.svg') }}" alt="" width="20" height="20">
+                        <h2 class="pe-card-title">Structure &amp; Équipe</h2>
+                    </div>
+                    <span class="pe-card-step-badge">Étape 2 sur 3</span>
+                </div>
+
+                <div class="pe-form-group">
+                    <label class="pe-label">Sélectionnez la tranche d'effectif de votre organisation :</label>
+                    <div class="pe-rhythm-grid">
+                        <div class="pe-rhythm-card {% if dto.employeeCount == '1-10' %}active{% endif %}"
+                             data-action="click->recruteur#selectCount"
+                             data-recruteur-target="countPill"
+                             data-count-value="1-10"
+                             data-count-label="1-10 collaborateurs">
+                            <img src="{{ asset(dto.employeeCount == '1-10' ? 'icons/radio_checked.svg' : 'icons/radio_unchecked.svg') }}" alt="" width="18" height="18" class="pe-rhythm-radio-icon">
+                            <div class="pe-rhythm-card-content">
+                                <p class="pe-rhythm-title">1 – 10 collaborateurs</p>
+                                <p class="pe-rhythm-desc">Startup &amp; TPE • Équipe agile à taille humaine</p>
                             </div>
-                            <div class="rp-company-sector-preview">
-                                {{ dto.sector ?: 'Secteur d\'activité' }}
+                        </div>
+
+                        <div class="pe-rhythm-card {% if dto.employeeCount == '11-49' %}active{% endif %}"
+                             data-action="click->recruteur#selectCount"
+                             data-recruteur-target="countPill"
+                             data-count-value="11-49"
+                             data-count-label="11-49 collaborateurs">
+                            <img src="{{ asset(dto.employeeCount == '11-49' ? 'icons/radio_checked.svg' : 'icons/radio_unchecked.svg') }}" alt="" width="18" height="18" class="pe-rhythm-radio-icon">
+                            <div class="pe-rhythm-card-content">
+                                <p class="pe-rhythm-title">11 – 49 collaborateurs</p>
+                                <p class="pe-rhythm-desc">PME innovante • Proximité &amp; projets transverses</p>
+                            </div>
+                        </div>
+
+                        <div class="pe-rhythm-card {% if dto.employeeCount == '50-249' %}active{% endif %}"
+                             data-action="click->recruteur#selectCount"
+                             data-recruteur-target="countPill"
+                             data-count-value="50-249"
+                             data-count-label="50-249 collaborateurs">
+                            <img src="{{ asset(dto.employeeCount == '50-249' ? 'icons/radio_checked.svg' : 'icons/radio_unchecked.svg') }}" alt="" width="18" height="18" class="pe-rhythm-radio-icon">
+                            <div class="pe-rhythm-card-content">
+                                <p class="pe-rhythm-title">50 – 249 collaborateurs</p>
+                                <p class="pe-rhythm-desc">Scale-up &amp; ETI • Pôle technique structuré</p>
+                            </div>
+                        </div>
+
+                        <div class="pe-rhythm-card {% if dto.employeeCount == '250+' %}active{% endif %}"
+                             data-action="click->recruteur#selectCount"
+                             data-recruteur-target="countPill"
+                             data-count-value="250+"
+                             data-count-label="250+ collaborateurs">
+                            <img src="{{ asset(dto.employeeCount == '250+' ? 'icons/radio_checked.svg' : 'icons/radio_unchecked.svg') }}" alt="" width="18" height="18" class="pe-rhythm-radio-icon">
+                            <div class="pe-rhythm-card-content">
+                                <p class="pe-rhythm-title">250+ collaborateurs</p>
+                                <p class="pe-rhythm-desc">Grand Groupe • Programmes alternance d'envergure</p>
                             </div>
                         </div>
                     </div>
+                </div>
+            </section>
 
-                    <h2 class="rp-panel__title">✏️ Mon Profil &amp; Vitrine</h2>
+            {# -----------------------------------------------------------------
+               CARD 3: Présentation & Culture d'Entreprise (Étape 3 sur 3)
+               ----------------------------------------------------------------- #}
+            <section class="pe-card">
+                <div class="pe-card-header">
+                    <div class="pe-card-title-wrap">
+                        <img src="{{ asset('icons/briefcase_doc.svg') }}" alt="" width="20" height="20">
+                        <h2 class="pe-card-title">Présentation &amp; Marque Employeur</h2>
+                    </div>
+                    <span class="pe-card-step-badge">Étape 3 sur 3</span>
+                </div>
 
-                    {{ form_start(form, {
-                        'action': path('app_recruteur_profil'),
-                        'method': 'POST',
-                        'attr': { 'novalidate': 'novalidate' }
+                <div class="pe-form-group">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <label class="pe-label">Pitch de présentation (affiché en premier sur votre deck de swipe entreprise)</label>
+                        <span class="pe-card-step-badge" data-recruteur-target="charCount">0 / 500</span>
+                    </div>
+                    {{ form_widget(form.shortPresentation, {
+                        'attr': {
+                            'class': 'pe-textarea',
+                            'rows': 4,
+                            'placeholder': 'Décrivez la mission de votre entreprise, vos valeurs, et ce que vous proposez aux alternants...',
+                            'data-recruteur-target': 'bioInput',
+                            'data-action': 'input->recruteur#updateBio'
+                        }
                     }) }}
-
-                        <div class="rp-form-group">
-                            {{ form_label(form.companyName, null, {'label_attr': {'class': 'rp-form-label'}}) }}
-                            {{ form_widget(form.companyName, {'attr': {'class': 'rp-form-control'}}) }}
-                            {{ form_errors(form.companyName) }}
-                        </div>
-
-                        <div class="rp-form-group">
-                            {{ form_label(form.sector, null, {'label_attr': {'class': 'rp-form-label'}}) }}
-                            {{ form_widget(form.sector, {'attr': {'class': 'rp-form-control'}}) }}
-                            {{ form_errors(form.sector) }}
-                        </div>
-
-                        <div class="rp-form-group">
-                            {{ form_label(form.employeeCount, null, {'label_attr': {'class': 'rp-form-label'}}) }}
-                            {{ form_widget(form.employeeCount, {'attr': {'class': 'rp-form-control rp-form-control--select'}}) }}
-                            {{ form_errors(form.employeeCount) }}
-                        </div>
-
-                        <div class="rp-form-group">
-                            {{ form_label(form.shortPresentation, null, {'label_attr': {'class': 'rp-form-label'}}) }}
-                            {{ form_widget(form.shortPresentation, {'attr': {'class': 'rp-form-control rp-form-control--textarea'}}) }}
-                            {{ form_errors(form.shortPresentation) }}
-                        </div>
-
-                        <button type="submit" class="rp-submit-btn">
-                            💾 Enregistrer le profil
-                        </button>
-
-                    {{ form_end(form) }}
+                    {{ form_errors(form.shortPresentation) }}
                 </div>
+            </section>
 
-            </div>{# end right-panel #}
-        </div>{# end col-4 #}
-
-    </div>{# end workspace #}
-
-</div>{# end container #}
-</main>
-
-{# ═══════════════════════════════ MODAL NOUVELLE ANNONCE ═════════════════ #}
-<div class="rp-modal-overlay" data-recruteur-target="modal"
-     data-action="click->recruteur#closeModalOnOverlay">
-    <div class="rp-modal">
-
-        <div class="rp-modal__header">
-            <div>
-                <h2 class="rp-modal__title">📋 Nouvelle annonce d'alternance</h2>
-                <p class="rp-modal__subtitle">Créez votre offre en quelques étapes pour trouver le candidat idéal.</p>
-            </div>
-            <button type="button" class="rp-modal__close"
-                    data-action="click->recruteur#closeModal" aria-label="Fermer">
-                <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-            </button>
         </div>
 
-        <div class="rp-modal__body">
-
-            {# Section 1 — Poste & niveau études #}
-            <div class="rp-modal__section">
-                <div class="rp-modal__section-header">
-                    <span class="rp-modal__section-title">1. Intitulé du poste &amp; niveau d'études requis</span>
-                    <span class="rp-modal__section-hint">* Requis</span>
+        {# =====================================================================
+           RIGHT COLUMN: APERÇU CARTE ENTREPRISE EN DIRECT (5 COLS)
+           ===================================================================== #}
+        <aside class="pe-deck-col">
+            
+            <div class="pe-deck-header">
+                <div class="pe-deck-title-wrap">
+                    <span class="pe-deck-live-dot"></span>
+                    <h3 class="pe-deck-title">Aperçu Carte Entreprise en Direct</h3>
                 </div>
-                <div class="rp-modal__input-wrapper">
-                    <span class="rp-modal__input-icon">
-                        <svg width="17" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
-                    </span>
-                    <input type="text" class="rp-modal__input" placeholder="Développeur Fullstack React / Node.js" id="modal_title">
-                </div>
-                <div>
-                    <span class="rp-modal__sublabel">Niveau minimum ciblé :</span>
-                    <div class="rp-modal__pills" style="margin-top:6px;">
-                        <button type="button" class="rp-modal-pill" data-action="click->recruteur#toggleDuration" data-recruteur-target="durationBtn">Bac+2 (BTS, DUT)</button>
-                        <button type="button" class="rp-modal-pill rp-modal-pill--active" data-action="click->recruteur#toggleDuration" data-recruteur-target="durationBtn">Bac+3 / Licence RNCP</button>
-                        <button type="button" class="rp-modal-pill" data-action="click->recruteur#toggleDuration" data-recruteur-target="durationBtn">Bac+5 / Master</button>
-                    </div>
-                </div>
+                <span class="pe-deck-badge-sub">Format Swipe Deck</span>
             </div>
 
-            {# Section 2 — Rythme & durée #}
-            <div class="rp-modal__section rp-modal__section--bg">
-                <div class="rp-modal__section-header">
-                    <span class="rp-modal__section-title">
-                        <svg width="15" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                        2. Rythme &amp; durée du contrat
-                    </span>
-                    <span class="rp-modal__section-hint rp-modal__section-hint--amber">Critère décisif</span>
-                </div>
-                <div>
-                    <span class="rp-modal__sublabel">Rythmes acceptés par votre entreprise :</span>
-                    <div class="rp-modal__pills" style="margin-top:6px;">
-                        <button type="button" class="rp-modal-pill rp-modal-pill--amber-active" data-action="click->recruteur#toggleRhythm" data-recruteur-target="rhythmBtn" data-sub="Recommandé">3j Entr. / 2j CFA</button>
-                        <button type="button" class="rp-modal-pill" style="background:white;" data-action="click->recruteur#toggleRhythm" data-recruteur-target="rhythmBtn">1 sem. / 3 sem.</button>
-                        <button type="button" class="rp-modal-pill" style="background:white;" data-action="click->recruteur#toggleRhythm" data-recruteur-target="rhythmBtn">2 sem. / 2 sem.</button>
-                        <button type="button" class="rp-modal-pill" style="background:white;" data-action="click->recruteur#toggleRhythm" data-recruteur-target="rhythmBtn">Tous rythmes <span style="color:#059669;font-size:10px;display:block;">+45% candidats</span></button>
-                    </div>
-                </div>
-                <div class="rp-modal__row">
-                    <div class="rp-modal__col">
-                        <span class="rp-modal__sublabel">Durée ciblée :</span>
-                        <div class="rp-duration-group" style="margin-top:4px;">
-                            <button type="button" class="rp-duration-btn" data-action="click->recruteur#toggleDuration" data-recruteur-target="durationBtn">12 mois</button>
-                            <button type="button" class="rp-duration-btn rp-duration-btn--active" data-action="click->recruteur#toggleDuration" data-recruteur-target="durationBtn">24 mois</button>
-                            <button type="button" class="rp-duration-btn" data-action="click->recruteur#toggleDuration" data-recruteur-target="durationBtn">36 mois</button>
-                        </div>
-                    </div>
-                    <div class="rp-modal__col">
-                        <span class="rp-modal__sublabel">Date de prise de poste :</span>
-                        <div class="rp-modal__input-wrapper" style="margin-top:4px;">
-                            <span class="rp-modal__input-icon" style="top:50%;transform:translateY(-50%);">
-                                <svg width="14" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                            </span>
-                            <input type="date" class="rp-modal__date-input" id="modal_start_date" value="2025-09-01">
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            {# Section 3 — Localisation & télétravail #}
-            <div class="rp-modal__section">
-                <span class="rp-modal__section-title">
-                    <svg width="11" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:6px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                    3. Localisation &amp; modalités télétravail
-                </span>
-                <div class="rp-modal__row" style="margin-top:4px;">
-                    <div class="rp-modal__input-wrapper" style="flex:1;">
-                        <span class="rp-modal__input-icon">
-                            <svg width="13" height="17" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            {# Live Company Deck Card #}
+            <div class="pe-live-swipe-card">
+                <div class="pe-live-card-photo-box">
+                    {% set cardPhoto = dto.logoUrl ? dto.logoUrl : asset('images/company_logo.jpeg') %}
+                    <img src="{{ cardPhoto }}" alt="" class="pe-live-card-photo" data-recruteur-target="liveCardPhoto" onerror="this.src='{{ asset('images/company_logo.jpeg') }}';">
+                    <div class="pe-live-top-badges">
+                        <span class="pe-live-badge-fit">✨ Recruteur Vérifié</span>
+                        <span class="pe-live-badge-dispo">
+                            <span class="pe-live-badge-dot"></span>
+                            <span data-recruteur-target="previewCount">{{ dto.employeeCount }} collaborateurs</span>
                         </span>
-                        <input type="text" class="rp-modal__input" placeholder="Boulogne-Billancourt (92100)" id="modal_location">
                     </div>
-                    <div class="rp-modal__remote-group" style="flex:1;">
-                        <button type="button" class="rp-remote-option rp-remote-option--active" data-action="click->recruteur#toggleRemote" data-recruteur-target="remoteBtn">Hybride 2j/sem</button>
-                        <button type="button" class="rp-remote-option" data-action="click->recruteur#toggleRemote" data-recruteur-target="remoteBtn">100% Présentiel</button>
-                        <button type="button" class="rp-remote-option" data-action="click->recruteur#toggleRemote" data-recruteur-target="remoteBtn">Full Remote</button>
-                    </div>
-                </div>
-            </div>
 
-            {# Section 4 — Stack technique #}
-            <div class="rp-modal__section">
-                <span class="rp-modal__section-title">4. Stack technique &amp; compétences requises</span>
-                <div class="rp-tag-zone" data-recruteur-target="tagList" id="tag-zone">
-                    <div class="rp-tag rp-tag--primary">React.js <button type="button" class="rp-tag-remove" data-action="click->recruteur#removeTag">×</button></div>
-                    <div class="rp-tag rp-tag--primary">TypeScript <button type="button" class="rp-tag-remove" data-action="click->recruteur#removeTag">×</button></div>
-                    <div class="rp-tag rp-tag--primary">Node.js <button type="button" class="rp-tag-remove" data-action="click->recruteur#removeTag">×</button></div>
-                    <div class="rp-tag rp-tag--light">PostgreSQL <button type="button" class="rp-tag-remove" data-action="click->recruteur#removeTag">×</button></div>
-                    <div class="rp-tag rp-tag--light">Docker <button type="button" class="rp-tag-remove" data-action="click->recruteur#removeTag">×</button></div>
-                    <input type="text" class="rp-tag-input" placeholder="+ Ajouter un tag..."
-                           data-action="keydown->recruteur#addTag"
-                           data-recruteur-target="tagInput">
-                </div>
-            </div>
-
-            {# Section 5 & 6 — Avantages & Rémunération #}
-            <div class="rp-modal__row">
-                <div class="rp-modal__section" style="flex:1;">
-                    <span class="rp-modal__section-title">5. Avantages entreprise</span>
-                    <div class="rp-perks">
-                        <span class="rp-perk rp-perk--green">✓ Carte Swile 10€</span>
-                        <span class="rp-perk rp-perk--green">✓ Mutuelle 100%</span>
-                        <span class="rp-perk rp-perk--green">✓ Mac M3 Pro</span>
-                        <span class="rp-perk rp-perk--neutral">+ Salle de sport</span>
-                        <span class="rp-perk rp-perk--neutral">+ Prime vacances</span>
+                    <div class="pe-live-hero-overlay">
+                        <h4 class="pe-live-name-headline">
+                            <span data-recruteur-target="previewName">{{ dto.companyName ?: 'Mon Entreprise' }}</span>
+                        </h4>
+                        <p class="pe-live-headline-sub">🏢 <span data-recruteur-target="previewSector">{{ dto.sector ?: 'Secteur d\'activité' }}</span></p>
                     </div>
                 </div>
-                <div class="rp-modal__section rp-salary-section" style="flex:1;">
-                    <span class="rp-modal__section-title">6. Rémunération mensuelle</span>
-                    <div class="rp-salary-display" data-recruteur-target="salaryDisplay">1 400 €/mois</div>
-                    <input type="range" class="rp-salary-slider" data-recruteur-target="salarySlider"
-                           min="500" max="3000" step="50" value="1400"
-                           data-action="input->recruteur#updateSalary">
-                    <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--rp-text-muted);">
-                        <span>500 €</span><span>3 000 €</span>
+
+                <div class="pe-live-card-content">
+                    <div class="pe-live-rhythm-strip">
+                        <div class="pe-live-rhythm-left">
+                            <img src="{{ asset('icons/briefcase_doc.svg') }}" alt="" width="14" height="14">
+                            <span>Secteur : <strong data-recruteur-target="previewSector">{{ dto.sector ?: 'Secteur d\'activité' }}</strong></span>
+                        </div>
+                        <span class="pe-live-duration-pill" data-recruteur-target="previewCount">
+                            {{ dto.employeeCount }} collab.
+                        </span>
+                    </div>
+
+                    <div class="pe-live-pitch-section">
+                        <p class="pe-live-pitch-label">PITCH ENTREPRISE &amp; CULTURE</p>
+                        <p class="pe-live-pitch-quote" data-recruteur-target="previewBio">
+                            "{{ dto.shortPresentation }}"
+                        </p>
+                    </div>
+
+                    <div class="pe-live-actions-row">
+                        <button type="button" class="pe-live-action-btn" title="Passer">
+                            <img src="{{ asset('icons/pass.svg') }}" alt="" width="16" height="16">
+                        </button>
+                        <button type="button" class="pe-live-action-btn red" title="Liker">
+                            <img src="{{ asset('icons/heart.svg') }}" alt="" width="20" height="20">
+                        </button>
+                        <button type="button" class="pe-live-action-btn blue" title="Contacter">
+                            <img src="{{ asset('icons/send.svg') }}" alt="" width="16" height="16">
+                        </button>
                     </div>
                 </div>
             </div>
 
-        </div>{# end modal body #}
+            {# Publication Settings Card #}
+            <div class="pe-pub-card">
+                <h3 class="pe-pub-title">Paramètres de vitrine</h3>
 
-        <div class="rp-modal__footer">
-            <button type="button" class="rp-modal__cancel"
-                    data-action="click->recruteur#closeModal">
-                Annuler
-            </button>
-            <button type="button" class="rp-modal__submit">
-                🚀 Publier l'annonce
-            </button>
-        </div>
+                <div class="pe-pub-toggle-row">
+                    <div class="pe-pub-toggle-texts">
+                        <p class="pe-pub-status-main">Statut : {% if dto.isPublic %}Profil Entreprise Actif &amp; Visible{% else %}Profil Privé{% endif %}</p>
+                        <p class="pe-pub-status-sub">{% if dto.isPublic %}Votre profil entreprise apparaît dans le flux de découverte des alternants{% else %}Votre entreprise est masquée des alternants{% endif %}</p>
+                    </div>
+                    <label class="pe-switch">
+                        {{ form_widget(form.isPublic) }}
+                        <span class="pe-slider"></span>
+                    </label>
+                </div>
 
-    </div>{# end rp-modal #}
-</div>{# end modal-overlay #}
+                <button type="button"
+                        class="pe-btn-pause"
+                        data-action="click->recruteur#togglePause"
+                        data-recruteur-target="pauseBtn">
+                    <img src="{{ asset('icons/pause_icon.svg') }}" alt="" width="14" height="14">
+                    <span data-recruteur-target="pauseBtnText">
+                        {% if dto.isPaused %}
+                            ▶ Réactiver mon profil entreprise (Reprendre la visibilité)
+                        {% else %}
+                            Mettre en pause mon profil (Recrutements clôturés)
+                        {% endif %}
+                    </span>
+                </button>
 
-</div>{# end data-controller #}
+                <button type="submit" class="pe-btn-save">
+                    <img src="{{ asset('icons/save_disk.svg') }}" alt="" width="16" height="16">
+                    <span>Enregistrer le profil</span>
+                </button>
+            </div>
+
+        </aside>
+
+    {{ form_end(form) }}
+</div>
+
+{# =========================================================================
+   FOOTER BAR
+   ========================================================================= #}
+<footer class="pe-footer-bar">
+    <div class="pe-footer-brand-copy">
+        <span class="pe-footer-brand">TinderNance</span>
+        <span>© 2025 Plateforme intelligente de recrutement en alternance.</span>
+    </div>
+    <div class="pe-footer-links">
+        <a href="#" class="pe-footer-link">Mentions légales</a>
+        <a href="#" class="pe-footer-link">Protection des données</a>
+        <a href="#" class="pe-footer-link">Aide &amp; FAQ</a>
+    </div>
+</footer>
 {% endblock %}

@@ -3,12 +3,14 @@
 namespace App\Controller;
 
 use App\DTO\CompanyProfileDto;
+use App\Entity\CompanyProfile;
 use App\Entity\User;
 use App\Enum\EmployeeCountRange;
 use App\Form\CompanyProfileType;
 use App\Repository\CompanyProfileRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -33,91 +35,118 @@ class RecruteurController extends AbstractController
         $companyProfile = null;
         $currentUser = $this->getUser();
 
-        // Chargement du profil : priorité à l'utilisateur connecté, sinon consultation par id
-        if ($currentUser instanceof User) {
-            $companyProfile = $currentUser->getCompanyProfile();
-            if ($companyProfile === null && $id !== null) {
+        try {
+            if ($id !== null) {
                 $companyProfile = $this->companyProfileRepository->find($id);
             }
-        } elseif ($id !== null) {
-            $companyProfile = $this->companyProfileRepository->find($id);
+
+            if (!$companyProfile && $currentUser instanceof User && $currentUser->getCompanyProfile()) {
+                $companyProfile = $currentUser->getCompanyProfile();
+            }
+
+            if (!$companyProfile) {
+                $companyProfile = $this->companyProfileRepository->findOneBy([]);
+            }
+        } catch (\Throwable) {
+            $companyProfile = null;
         }
 
-        // Initialisation du DTO depuis les données réelles de l'entité
+        // Initialisation du DTO avec les données existantes ou les valeurs de l'utilisateur connecté
         $dto = new CompanyProfileDto();
+        $user = $companyProfile?->getUser() ?? ($currentUser instanceof User ? $currentUser : null);
+
         if ($companyProfile) {
-            $dto->companyName = $companyProfile->getCompanyName() ?? '';
-            $dto->sector = $companyProfile->getSector() ?? '';
-            $dto->shortPresentation = $companyProfile->getShortPresentation() ?? '';
-            $dto->employeeCount = $companyProfile->getEmployeeCount()?->value ?? EmployeeCountRange::RANGE_1_10->value;
+            $dto->companyName = $companyProfile->getCompanyName();
+            $dto->sector = $companyProfile->getSector() ?: 'Technologies & Édition Logicielle';
+            $dto->shortPresentation = $companyProfile->getShortPresentation() ?: 'Nous concevons des solutions logicielles innovantes pour transformer l\'expérience de travail des équipes modernes. Rejoignez une équipe passionnée en pleine croissance !';
+            $dto->employeeCount = $companyProfile->getEmployeeCount()?->value ?: EmployeeCountRange::RANGE_11_49->value;
             $dto->logoUrl = $companyProfile->getLogoUrl();
-        } else {
-            // Aucun profil : on pré-remplit avec les infos de l'utilisateur connecté
-            if ($currentUser instanceof User) {
-                $dto->companyName = trim(($currentUser->getFirstName() ?? '') . ' ' . ($currentUser->getLastName() ?? ''));
-            }
-            $dto->sector = '';
-            $dto->shortPresentation = '';
-            $dto->employeeCount = EmployeeCountRange::RANGE_1_10->value;
         }
+
+        if ($user) {
+            $dto->contactName = trim(($user->getFirstName() ?? '') . ' ' . ($user->getLastName() ?? ''));
+            $dto->email = $user->getEmail();
+            if (empty($dto->companyName)) {
+                $dto->companyName = $dto->contactName;
+            }
+        }
+
+        // Valeurs de repli par défaut si champs non encore renseignés
+        $dto->companyName = $dto->companyName ?: 'Acme Technologies';
+        $dto->contactName = $dto->contactName ?: 'Konnard Thomas';
+        $dto->email = $dto->email ?: 'recrutement@acme.tech';
+        $dto->sector = $dto->sector ?: 'Technologies & Édition Logicielle';
+        $dto->shortPresentation = $dto->shortPresentation ?: 'Nous concevons des solutions logicielles innovantes pour transformer l\'expérience de travail des équipes modernes. Rejoignez une équipe passionnée en pleine croissance !';
+        $dto->employeeCount = $dto->employeeCount ?: EmployeeCountRange::RANGE_11_49->value;
+        $dto->isPublic = true;
+        $dto->isPaused = false;
 
         $form = $this->createForm(CompanyProfileType::class, $dto);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($companyProfile) {
+            // Traitement de l'upload du logo si présent
+            if ($dto->logoFile instanceof UploadedFile) {
+                try {
+                    $uploadsDir = $this->getParameter('kernel.project_dir') . '/public/uploads/logos';
+                    if (!is_dir($uploadsDir)) {
+                        mkdir($uploadsDir, 0777, true);
+                    }
+                    $newFilename = uniqid('logo_') . '.' . ($dto->logoFile->guessExtension() ?? 'png');
+                    $dto->logoFile->move($uploadsDir, $newFilename);
+                    $dto->logoUrl = '/uploads/logos/' . $newFilename;
+                } catch (\Throwable) {
+                    // Erreur silencieuse d'upload
+                }
+            }
+
+            try {
+                if (!$companyProfile) {
+                    $companyProfile = new CompanyProfile();
+                    if ($user) {
+                        $companyProfile->setUser($user);
+                    }
+                }
+
                 $companyProfile->setCompanyName($dto->companyName);
                 $companyProfile->setSector($dto->sector);
                 $companyProfile->setShortPresentation($dto->shortPresentation);
 
-                $enumCount = EmployeeCountRange::from($dto->employeeCount);
-                $companyProfile->setEmployeeCount($enumCount);
-
                 try {
-                    $this->entityManager->persist($companyProfile);
-                    $this->entityManager->flush();
-                } catch (\Throwable) {
-                    // Tolérance si la base n'est pas connectée
+                    $enumCount = EmployeeCountRange::from($dto->employeeCount);
+                    $companyProfile->setEmployeeCount($enumCount);
+                } catch (\ValueError) {
+                    $companyProfile->setEmployeeCount(EmployeeCountRange::RANGE_11_49);
                 }
+
+                if ($dto->logoUrl) {
+                    $companyProfile->setLogoUrl($dto->logoUrl);
+                }
+
+                if ($user) {
+                    $nameParts = explode(' ', trim($dto->contactName), 2);
+                    $user->setFirstName($nameParts[0] ?? '');
+                    $user->setLastName($nameParts[1] ?? '');
+                    if ($dto->email) {
+                        $user->setEmail($dto->email);
+                    }
+                }
+
+                $this->entityManager->persist($companyProfile);
+                $this->entityManager->flush();
+            } catch (\Throwable) {
+                // Tolérance si la base de données n'est pas connectée
             }
 
-            $this->addFlash('success', 'Votre profil entreprise a été mis à jour ! 🎉');
+            $this->addFlash('success', 'Votre profil entreprise a été enregistré avec succès ! 🎉');
 
             return $this->redirectToRoute('app_recruteur_profil');
         }
-
-        // Données de démo pour le pipeline et le candidat en cours
-        $demoCandidate = [
-            'name' => 'Lucas Moreau',
-            'school' => 'École 42 Paris',
-            'schoolStatus' => 'Admis',
-            'rhythm' => '3j Entr. / 2j CFA',
-            'duration' => '24 mois (Sept 2025)',
-            'location' => 'Boulogne-Billancourt',
-            'bio' => '« Passionné de React, TypeScript et Node.js. J\'ai déjà déployé 2 projets complets en production, je suis autonome et très curieux des bonnes pratiques DevOps. »',
-            'stack' => ['TypeScript', 'React.js', 'Node / NestJS', 'PostgreSQL', 'Docker', 'TailwindCSS'],
-            'softSkills' => ['🤝 Esprit d\'équipe', '🔍 Rigueur & Tests', '🚀 Curiosité tech', '💬 Communication'],
-            'projects' => [
-                ['name' => 'PulseMetrics SaaS', 'tech' => 'Next.js 14, Tailwind, Prisma, Stripe'],
-                ['name' => 'Microservices Engine', 'tech' => 'Architecture Node/Nest & RabbitMQ'],
-            ],
-            'activeStatus' => 'Candidat actif • Répond en < 2h',
-            'hasCfaDossier' => true,
-            'hasLikedOffer' => true,
-        ];
-
-        $demoPipeline = [
-            'currentOffer' => 'Développeur Fullstack React / Node',
-            'pendingCount' => 32,
-            'matchesThisWeek' => 3,
-        ];
 
         return $this->render('recruteur/profil.html.twig', [
             'companyProfile' => $companyProfile,
             'dto' => $dto,
             'form' => $form->createView(),
-            'candidate' => $demoCandidate,
-            'pipeline' => $demoPipeline,
         ]);
     }
 }

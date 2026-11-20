@@ -3,13 +3,16 @@
 namespace App\Form;
 
 use App\DTO\CompanyProfileDto;
-use App\Enum\EmployeeCountRange;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
 
 class CompanyProfileType extends AbstractType
 {
@@ -17,40 +20,39 @@ class CompanyProfileType extends AbstractType
     {
         $builder
             ->add('companyName', TextType::class, [
-                'label' => 'Nom de l\'entreprise',
-                'attr' => [
-                    'placeholder' => 'ex: Acme Corp',
-                    'data-recruteur-target' => 'companyName',
-                    'data-action' => 'input->recruteur#previewName',
-                ],
+                'required' => true,
+            ])
+            ->add('contactName', TextType::class, [
+                'required' => true,
+            ])
+            ->add('email', EmailType::class, [
+                'required' => true,
             ])
             ->add('sector', TextType::class, [
-                'label' => 'Secteur d\'activité',
-                'attr' => [
-                    'placeholder' => 'ex: Fintech, E-commerce, SaaS…',
-                    'data-recruteur-target' => 'sector',
-                ],
+                'required' => true,
+            ])
+            ->add('employeeCount', HiddenType::class, [
+                'required' => true,
             ])
             ->add('shortPresentation', TextareaType::class, [
-                'label' => 'Présentation courte',
-                'attr' => [
-                    'placeholder' => 'Décrivez votre entreprise en 2-3 phrases…',
-                    'rows' => 3,
-                    'data-recruteur-target' => 'bio',
-                    'data-action' => 'input->recruteur#updateBio',
-                ],
+                'required' => false,
             ])
-            ->add('employeeCount', ChoiceType::class, [
-                'label' => 'Taille de l\'entreprise',
-                'choices' => [
-                    '1 – 10 collaborateurs' => EmployeeCountRange::RANGE_1_10->value,
-                    '11 – 49 collaborateurs' => EmployeeCountRange::RANGE_11_49->value,
-                    '50 – 249 collaborateurs' => EmployeeCountRange::RANGE_50_249->value,
-                    '250+ collaborateurs' => EmployeeCountRange::RANGE_250_PLUS->value,
-                ],
-                'attr' => [
-                    'data-recruteur-target' => 'employeeCount',
-                    'data-action' => 'change->recruteur#updateCount',
+            ->add('isPublic', CheckboxType::class, [
+                'required' => false,
+            ])
+            ->add('isPaused', HiddenType::class, [
+                'required' => false,
+            ])
+            ->add('logoFile', FileType::class, [
+                'required' => false,
+                'mapped' => true,
+                'label' => false,
+                'constraints' => [
+                    new File(
+                        maxSize: '5M',
+                        mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'],
+                        mimeTypesMessage: 'Veuillez uploader une image valide (JPG, PNG, WEBP, SVG).',
+                    ),
                 ],
             ])
         ;
@@ -60,6 +62,9 @@ class CompanyProfileType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => CompanyProfileDto::class,
+            'csrf_protection' => true,
+            'csrf_field_name' => '_token',
+            'csrf_token_id'   => 'company_profile_item',
         ]);
     }
 }
