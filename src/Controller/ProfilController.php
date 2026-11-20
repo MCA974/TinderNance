@@ -3,9 +3,7 @@
 namespace App\Controller;
 
 use App\DTO\StudentProfileDto;
-use App\Entity\StudentProfile;
 use App\Entity\User;
-use App\Enum\ContractDuration;
 use App\Form\StudentProfileType;
 use App\Repository\StudentProfileRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,53 +26,44 @@ class ProfilController extends AbstractController
         $studentProfile = null;
         $currentUser = $this->getUser();
 
-        try {
-            if ($currentUser instanceof User && $currentUser->getStudentProfile()) {
-                $studentProfile = $currentUser->getStudentProfile();
-            } elseif ($id !== null) {
+        // Chargement du profil : priorité à l'utilisateur connecté, sinon consultation par id
+        if ($currentUser instanceof User) {
+            $studentProfile = $currentUser->getStudentProfile();
+            if ($studentProfile === null && $id !== null) {
+                // Mode consultation d'un profil public
                 $studentProfile = $this->studentProfileRepository->find($id);
             }
-
-            if (!$studentProfile) {
-                $studentProfile = $this->studentProfileRepository->findOneBy([]);
-            }
-        } catch (\Throwable) {
-            $studentProfile = null;
+        } elseif ($id !== null) {
+            $studentProfile = $this->studentProfileRepository->find($id);
         }
 
-        // Initialisation du DTO avec les données du profil existant ou les valeurs par défaut
+        // Initialisation du DTO depuis les données réelles de l'entité
         $dto = new StudentProfileDto();
         if ($studentProfile) {
             $user = $studentProfile->getUser() ?? ($currentUser instanceof User ? $currentUser : null);
-            $dto->fullName = $user ? trim(($user->getFirstName() ?? '') . ' ' . ($user->getLastName() ?? '')) : 'Lucas Moreau';
-            $dto->email = $user?->getEmail() ?? 'lucas.moreau@student-hetic.net';
-            $dto->searchRegion = $studentProfile->getSearchArea()->getRegion() ?? $studentProfile->getSearchArea()->getCity() ?? 'Paris & Petite Couronne (75, 92, 93, 94)';
+            $dto->fullName = $user ? trim(($user->getFirstName() ?? '') . ' ' . ($user->getLastName() ?? '')) : '';
+            $dto->email = $user?->getEmail() ?? '';
+            $dto->searchRegion = $studentProfile->getSearchArea()->getRegion() ?: ($studentProfile->getSearchArea()->getCity() ?: '');
             $dto->searchRadius = $studentProfile->getSearchArea()->getRadiusKm() ?? 25;
-            $dto->schoolName = $studentProfile->getSchoolName() ?? 'HÉTIC - La Grande École de la Tech';
-            $dto->obtainedDiploma = $studentProfile->getObtainedDiploma() ?? 'Mastère CTO & Tech Lead • Niveau 7 (Bac +5)';
-            $dto->schoolCampus = 'HÉTIC - Campus Montreuil';
-            $dto->schoolStatus = $studentProfile->getSchoolStatus()?->value ?? 'INSCRIT';
-            $dto->alternationRhythm = $studentProfile->getAlternationRhythm() ?? '3j Entreprise / 2j École';
-            $dto->contractDuration = $studentProfile->getContractDuration()?->value ?? '2_ANS';
-            $dto->desiredStartDate = $studentProfile->getDesiredStartDate()?->format('d/m/Y') ?? '09/01/2025';
-            $dto->bio = $studentProfile->getBio() ?? "Développeur Fullstack passionné par l'architecture React, Next.js et TypeScript. Rigoureux, curieux et autonome, je cherche à rejoindre une scale-up produit. GAMER dans l’âme jeux préféré ROBLOX";
+            $dto->schoolName = $studentProfile->getSchoolName() ?? '';
+            $dto->obtainedDiploma = $studentProfile->getObtainedDiploma() ?? '';
+            $dto->schoolCampus = '';
+            $dto->schoolStatus = $studentProfile->getSchoolStatus()?->value ?? '';
+            $dto->alternationRhythm = $studentProfile->getAlternationRhythm() ?? '';
+            $dto->contractDuration = $studentProfile->getContractDuration()?->value ?? '';
+            $dto->desiredStartDate = $studentProfile->getDesiredStartDate()?->format('d/m/Y') ?? '';
+            $dto->bio = $studentProfile->getBio() ?? '';
             $dto->photoUrl = $studentProfile->getPhotoUrl();
             $dto->cvUrl = $studentProfile->getCvUrl();
             $dto->isPublic = $studentProfile->isPublic() ?? true;
             $dto->isPaused = $studentProfile->isPaused() ?? false;
         } else {
-            $dto->fullName = 'Lucas Moreau';
-            $dto->email = 'lucas.moreau@student-hetic.net';
-            $dto->searchRegion = 'Paris & Petite Couronne (75, 92, 93, 94)';
+            // Aucun profil : on pré-remplit avec les infos de base de l'utilisateur connecté
+            if ($currentUser instanceof User) {
+                $dto->fullName = trim(($currentUser->getFirstName() ?? '') . ' ' . ($currentUser->getLastName() ?? ''));
+                $dto->email = $currentUser->getEmail() ?? '';
+            }
             $dto->searchRadius = 25;
-            $dto->schoolName = 'HÉTIC - La Grande École de la Tech';
-            $dto->obtainedDiploma = 'Mastère CTO & Tech Lead • Niveau 7 (Bac +5)';
-            $dto->schoolCampus = 'HÉTIC - Campus Montreuil';
-            $dto->schoolStatus = 'INSCRIT';
-            $dto->alternationRhythm = '3j Entreprise / 2j École';
-            $dto->contractDuration = '2_ANS';
-            $dto->desiredStartDate = '09/01/2025';
-            $dto->bio = "Développeur Fullstack passionné par l'architecture React, Next.js et TypeScript. Rigoureux, curieux et autonome, je cherche à rejoindre une scale-up produit. GAMER dans l’âme jeux préféré ROBLOX";
             $dto->isPublic = true;
             $dto->isPaused = false;
         }
@@ -95,13 +84,13 @@ class ProfilController extends AbstractController
                     }
 
                     $searchArea = $studentProfile->getSearchArea();
-                    $searchArea->setRegion($dto->searchRegion);
-                    $searchArea->setRadiusKm($dto->searchRadius);
+                    $searchArea->setRegion($dto->searchRegion ?? '');
+                    $searchArea->setRadiusKm($dto->searchRadius ?? 25);
 
-                    $studentProfile->setSchoolName($dto->schoolName);
-                    $studentProfile->setObtainedDiploma($dto->obtainedDiploma);
-                    $studentProfile->setAlternationRhythm($dto->alternationRhythm);
-                    $studentProfile->setBio($dto->bio);
+                    $studentProfile->setSchoolName($dto->schoolName ?? '');
+                    $studentProfile->setObtainedDiploma($dto->obtainedDiploma ?? '');
+                    $studentProfile->setAlternationRhythm($dto->alternationRhythm ?? '');
+                    $studentProfile->setBio($dto->bio ?? '');
                     $studentProfile->setIsPublic($dto->isPublic);
                     $studentProfile->setIsPaused($dto->isPaused);
 

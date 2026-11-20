@@ -33,33 +33,32 @@ class RecruteurController extends AbstractController
         $companyProfile = null;
         $currentUser = $this->getUser();
 
-        try {
-            if ($currentUser instanceof User && $currentUser->getCompanyProfile()) {
-                $companyProfile = $currentUser->getCompanyProfile();
-            } elseif ($id !== null) {
+        // Chargement du profil : priorité à l'utilisateur connecté, sinon consultation par id
+        if ($currentUser instanceof User) {
+            $companyProfile = $currentUser->getCompanyProfile();
+            if ($companyProfile === null && $id !== null) {
                 $companyProfile = $this->companyProfileRepository->find($id);
             }
-
-            if (!$companyProfile) {
-                $companyProfile = $this->companyProfileRepository->findOneBy([]);
-            }
-        } catch (\Throwable) {
-            $companyProfile = null;
+        } elseif ($id !== null) {
+            $companyProfile = $this->companyProfileRepository->find($id);
         }
 
-        // Initialisation du DTO avec les données existantes ou les valeurs de démo
+        // Initialisation du DTO depuis les données réelles de l'entité
         $dto = new CompanyProfileDto();
         if ($companyProfile) {
-            $dto->companyName = $companyProfile->getCompanyName() ?? ($currentUser instanceof User ? ($currentUser->getFirstName() . ' ' . $currentUser->getLastName()) : 'Acme Fintech');
-            $dto->sector = $companyProfile->getSector() ?? 'Fintech / SaaS';
-            $dto->shortPresentation = $companyProfile->getShortPresentation() ?? 'Nous construisons la prochaine génération d\'outils financiers pour les PME européennes.';
-            $dto->employeeCount = $companyProfile->getEmployeeCount()?->value ?? EmployeeCountRange::RANGE_11_49->value;
+            $dto->companyName = $companyProfile->getCompanyName() ?? '';
+            $dto->sector = $companyProfile->getSector() ?? '';
+            $dto->shortPresentation = $companyProfile->getShortPresentation() ?? '';
+            $dto->employeeCount = $companyProfile->getEmployeeCount()?->value ?? EmployeeCountRange::RANGE_1_10->value;
             $dto->logoUrl = $companyProfile->getLogoUrl();
         } else {
-            $dto->companyName = 'Acme Fintech';
-            $dto->sector = 'Fintech / SaaS B2B';
-            $dto->shortPresentation = 'Nous construisons la prochaine génération d\'outils financiers pour les PME européennes. Équipe de 30 personnes, full remote-friendly, stack moderne.';
-            $dto->employeeCount = EmployeeCountRange::RANGE_11_49->value;
+            // Aucun profil : on pré-remplit avec les infos de l'utilisateur connecté
+            if ($currentUser instanceof User) {
+                $dto->companyName = trim(($currentUser->getFirstName() ?? '') . ' ' . ($currentUser->getLastName() ?? ''));
+            }
+            $dto->sector = '';
+            $dto->shortPresentation = '';
+            $dto->employeeCount = EmployeeCountRange::RANGE_1_10->value;
         }
 
         $form = $this->createForm(CompanyProfileType::class, $dto);

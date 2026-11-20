@@ -5,6 +5,10 @@ namespace App\Controller;
 use App\Entity\CompanyProfile;
 use App\Entity\StudentProfile;
 use App\Entity\User;
+use App\Enum\ContractDuration;
+use App\Enum\EmployeeCountRange;
+use App\Enum\SchoolStatus;
+use App\Enum\StudyLevel;
 use App\Enum\UserRole;
 use App\Form\RegistrationFormType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -62,18 +66,33 @@ class RegistrationController extends AbstractController
             }
             $user->setRoles($roles);
 
-            // Initialize matching profile entity
+            // Initialize matching profile entity with safe defaults for all non-nullable DB columns
             if ($user->getRole() === UserRole::STUDENT) {
                 $studentProfile = new StudentProfile();
                 $studentProfile->setUser($user);
+                // Champs obligatoires pour éviter une violation de contrainte DB
                 $studentProfile->setIsPublic(true);
                 $studentProfile->setIsPaused(false);
+                $studentProfile->setTargetStudyLevel(StudyLevel::BAC_PLUS_3);
+                $studentProfile->setSchoolStatus(SchoolStatus::ENROLLED);
+                $studentProfile->setContractDuration(ContractDuration::ONE_YEAR);
+                $studentProfile->setDesiredStartDate(new \DateTimeImmutable('+6 months'));
+                // SearchArea embedded : initialiser les 4 champs requis par la DB
+                $searchArea = $studentProfile->getSearchArea();
+                $searchArea->setCity('');
+                $searchArea->setDepartment('');
+                $searchArea->setRegion('');
+                $searchArea->setRadiusKm(25);
                 $user->setStudentProfile($studentProfile);
                 $entityManager->persist($studentProfile);
             } elseif ($user->getRole() === UserRole::COMPANY) {
                 $companyProfile = new CompanyProfile();
                 $companyProfile->setUser($user);
                 $companyProfile->setCompanyName(trim(($user->getFirstName() ?? '') . ' ' . ($user->getLastName() ?? '')));
+                $companyProfile->setLogoUrl('');
+                $companyProfile->setSector('');
+                $companyProfile->setShortPresentation('');
+                $companyProfile->setEmployeeCount(EmployeeCountRange::RANGE_1_10);
                 $user->setCompanyProfile($companyProfile);
                 $entityManager->persist($companyProfile);
             }
