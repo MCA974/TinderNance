@@ -26,18 +26,11 @@
     <div class="pe-nav-links">
         <a href="#" class="pe-nav-link">Offres</a>
         <a href="#" class="pe-nav-link">Candidats</a>
-        <a href="#" class="pe-nav-link">
-            <span>Matches &amp; Messages</span>
-            <span class="pe-badge-count">5</span>
-        </a>
+        <a href="#" class="pe-nav-link"></a>
         <a href="{{ path('app_recruteur_profil') }}" class="pe-nav-link active">Mon Profil &amp; Vitrine</a>
     </div>
 
     <div class="pe-nav-user-area">
-        <button type="button" class="pe-nav-bell-btn" title="Notifications">
-            <img src="{{ asset('icons/bell.svg') }}" alt="" width="18" height="18">
-            <span class="pe-nav-bell-badge"></span>
-        </button>
 
         <div class="pe-nav-user-pill">
             {% set navAvatar = dto.logoUrl ? dto.logoUrl : asset('images/recruiter_avatar.jpeg') %}
@@ -78,7 +71,7 @@
             <h1 class="pe-header-title">Mon Profil Entreprise</h1>
         </div>
 
-        <div class="pe-view-switcher">
+        <!-- <div class="pe-view-switcher">
             <button type="button" class="pe-view-btn active" data-action="click->recruteur#switchView" data-recruteur-target="viewBtn">
                 <img src="{{ asset('icons/edit_pen.svg') }}" alt="" width="14" height="14">
                 <span>Éditer en tant qu'Entreprise</span>
@@ -87,7 +80,7 @@
                 <img src="{{ asset('icons/preview_eye.svg') }}" alt="" width="16" height="12">
                 <span>Aperçu public Alternant</span>
             </button>
-        </div>
+        </div> -->
     </header>
 
     {# Formulaire interactif relié au contrôleur Stimulus #}
